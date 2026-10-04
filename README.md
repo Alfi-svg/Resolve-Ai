@@ -1,268 +1,738 @@
 # UPAY ResolveAI
 
-> **"Understand. Investigate. Resolve."**  
-> *From transaction problem to explainable resolution.*
+> **Understand. Investigate. Resolve.**
 
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI_0.141-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/Frontend-React_19_+_TypeScript-61DAFB.svg?logo=react)](https://react.dev)
-[![TailwindCSS](https://img.shields.io/badge/Styling-Tailwind_CSS-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com)
-[![License](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
-[![Hackathon MVP](https://img.shields.io/badge/Status-Hackathon_MVP-amber.svg)]()
+UPAY ResolveAI is a hackathon MVP that explores how AI can help investigate unclear digital payment incidents and turn them into explainable, actionable cases.
+
+The prototype takes a customer complaint, identifies the relevant transaction, correlates available synthetic evidence, checks the applicable policy information, explains the likely cause, and recommends the next step for human approval.
 
 ---
 
-## Why We Built This
+## 1. Project Overview
 
-Digital financial services (MFS) like Upay, bKash, and Rocket have transformed everyday commerce across Bangladesh. Every second, thousands of QR payments, Send Money transfers, and bill payments occur at tea stalls, cafes, supermarkets, and pharmacies.
+### The problem
 
-Yet, distributed payment architectures are fundamentally asynchronous. When network connectivity jitters, switch sockets timeout, or bank aggregators lag, transactions enter an ambiguous "limbo" state. 
+A digital payment can move through several systems before it is completed. When one part of that flow is delayed or fails, a customer may see a debit without seeing a successful merchant payment.
 
-Customers are left stressed at a retail counter asking:  
-*“Did my money go through? The merchant says they didn't receive it, but my wallet was debited!”*
+From the customer's perspective, the most important questions are simple:
 
-Meanwhile, support agents are overwhelmed having to open 5 different terminal screens—ledger databases, payment gateway logs, SMS dispatch queues, and merchant clearing reports—just to piece together what occurred.
+- What happened to my money?
+- Did the payment reach the merchant?
+- Should I try the payment again?
+- What should happen next?
 
-We built **UPAY ResolveAI** to bridge this gap: replacing anxiety and slow dispute tickets with instant, explainable, evidence-backed transaction resolution.
+For support teams, answering these questions can require information from several sources.
+
+### Our solution
+
+UPAY ResolveAI adds an AI-assisted investigation layer around the transaction support process.
+
+Instead of treating a complaint as a simple FAQ request, the prototype follows an investigation workflow:
+
+**Understand → Investigate → Verify → Explain → Resolve**
+
+The system is designed around a clear boundary:
+
+> **AI investigates and explains; human specialists remain in control of financial decisions.**
+
+The current implementation uses synthetic transaction, incident, and policy data for demonstration. It does not connect to live Upay banking infrastructure or live payment gateways.
 
 ---
 
-## The Problem
+## 2. Key Features
 
-When a mobile transaction fails or stalls:
-1. **Customer Blindness:** The customer only sees that balance was deducted. They don't know if the merchant will receive it, if they should scan again (risking double-debit), or when their money will return.
-2. **Support Latency:** Human support specialists spend an average of 15 to 45 minutes manually cross-referencing ledger tables and clearing batches.
-3. **Black-Box AI Skepticism:** Traditional chatbots either parrot generic FAQs or hallucinate promises of refunds without understanding real financial ledger state.
-4. **Systemic Invisibility:** When a specific gateway node degrades (affecting 300+ transactions simultaneously), isolated customer complaints are treated as separate tickets rather than recognizing the root systemic cluster.
+### Customer Dashboard
+A customer-facing wallet interface with:
+
+- Balance and transaction activity
+- Send Money
+- Add Money
+- Cash Out
+- Pay Bill
+- QR Pay
+- Transaction help entry point
+
+### AI Complaint Assistant
+Accepts complaints in:
+
+- Bangla
+- Banglish
+- English
+
+The prototype extracts useful information such as transaction type, amount, and complaint context, then identifies a candidate transaction for investigation.
+
+### Transaction Detective
+The main investigation interface.
+
+It presents:
+
+- Transaction metadata
+- Correlated evidence cards
+- Chronological transaction timeline
+- Root-cause assessment
+- Policy information
+- Recommended resolution
+- Investigation details for support review
+
+### Evidence & Timeline
+The prototype combines synthetic records from several simulated sources, such as:
+
+- Core ledger
+- Payment gateway
+- Clearing engine
+- SMS/notification service
+
+The timeline helps show how a transaction moved through the simulated payment flow.
+
+### AI Support Copilot
+A support-facing workspace for reviewing cases.
+
+It includes:
+
+- Active dispute cases
+- AI-generated case summaries
+- Investigation results
+- Approve Resolution
+- Escalate
+- Request Information
+
+Financial actions remain subject to human approval in the prototype.
+
+### Incident Intelligence
+The system can group related synthetic transaction failures to demonstrate how several customer complaints may point to a common incident.
+
+The demo includes a synthetic gateway-related cluster involving **341 transactions and 82 merchants**. These figures are demonstration data, not real Upay operational statistics.
+
+### Service Intelligence Analytics
+The prototype includes charts for:
+
+- Dispute categories
+- Resolution queues
+- SLA-related indicators
+
+All displayed metrics are synthetic demo data.
 
 ---
 
-## Our Approach
+## 3. How AI Is Used
 
-ResolveAI introduces an **explainable financial intelligence layer** on top of the digital wallet ecosystem:
+### 3.1 Complaint Understanding
 
+The complaint assistant processes natural-language input and extracts relevant entities and intent.
+
+Example:
+
+```text
+QR payment korechi, 2000 taka kete geche but merchant pay nai.
 ```
-Customer Complaint (Bangla / Banglish / English)
-                ↓
-    AI Complaint Understanding
-                ↓
-    Smart Transaction Identification
-                ↓
-    Transaction Detective (Ledger Forensics)
-                ↓
-    Evidence Correlation (Multi-source Audit)
-                ↓
-    Root Cause Analysis (Zero Hallucination)
-                ↓
-    Policy / FAQ Intelligence (Simulated RAG)
-                ↓
-    Resolution Recommendation
-                ↓
-    Human-in-the-Loop Approval
-                ↓
-    Resolution & Batch Settlement Execution
+
+The prototype can identify information such as:
+
+```text
+Transaction Type: QR Payment
+Amount: ৳2,000
+Situation: Customer debited / merchant not credited
+Priority: High
 ```
 
-**Core Principle:** AI investigates and explains; human specialists maintain fiduciary control. Irreversible financial actions are never executed by an autonomous black box.
+### 3.2 Transaction Identification
+
+The extracted information is matched against the synthetic transaction dataset to identify a relevant transaction record.
+
+### 3.3 Investigation and Evidence Correlation
+
+The investigation layer brings together related synthetic records and presents them as a single case.
+
+This allows the support user to see the transaction context rather than relying on a single status message.
+
+### 3.4 Root-Cause Assessment
+
+The prototype uses structured transaction states and simulated telemetry to determine a likely failure point.
+
+The result is presented together with the supporting evidence available in the demo.
+
+### 3.5 Policy / FAQ Retrieval
+
+The project includes a simulated policy knowledge layer used to connect an investigation with relevant policy information.
+
+The current implementation is intended for demonstration and does not represent a live regulatory or production policy service.
+
+### 3.6 Resolution Recommendation
+
+Based on the investigation result and available policy information, the system suggests a next action.
+
+The recommendation is not treated as an autonomous financial decision.
+
+### 3.7 Incident Clustering
+
+Related synthetic failures can be grouped to demonstrate system-level incident detection.
+
+This helps move the workflow from:
+
+**one complaint → one case**
+
+towards:
+
+**multiple related cases → one possible incident**
 
 ---
 
-## How AI Is Used
+## 4. System Workflow
 
-1. **Multilingual Intent & Entity Extraction:** Parses natural language complaints in everyday colloquial **Bangla** (`"ভাই, আমি QR দিয়ে ২০০০ টাকা pay করছিলাম..."`), **Banglish** (`"QR payment korechi, 2000 taka kete geche but merchant pay nai..."`), or English. It extracts transaction types, amounts, and urgency sentiment, and matches candidate ledger entries.
-2. **Deterministic Root Cause Forensics:** Rather than asking an LLM to guess, ResolveAI’s diagnostic engine evaluates distributed transaction telemetry (TCP socket timeouts, two-phase commit phases, clearing batch receipts) to produce a mathematically grounded root cause with 92%+ certainty.
-3. **Simulated Policy RAG Retrieval:** Matches incident forensics against Upay Service Policies and Bangladesh Bank PSD guidelines to cite exact operational turnaround times (SLAs) and mandatory reconciliation procedures.
-4. **Agent Copilot Summarization:** Generates concise 2-sentence executive briefs so support agents can understand complex multi-system failures in under 5 seconds.
-5. **Systemic Incident Clustering:** Correlates failures across time windows to detect when hundreds of merchants are impacted by the same degraded gateway switch.
-
----
-
-## Core Features
-
-- **Customer Wallet Dashboard:** Clean Upay-inspired interface displaying available balance (`৳24,580.00`), quick actions (Send Money, Add Money, Cash Out, Pay Bill, QR Pay), and real-time transaction activity.
-- **AI Complaint Assistant:** Conversational intake with real-time analysis animation that converts unstructured complaints into structured financial telemetry.
-- **Transaction Detective (Hero Feature):** Dedicated forensics hub providing:
-  - High-level transaction metadata (`TXN-8F31A2`, ৳2,000 at ABC Cafe)
-  - Evidence Engine with 5 verifiable telemetry cards (Core Ledger, PGW-East-02 Router, Clearing Engine, Telecom SMS)
-  - Millisecond-precision Chronological Timeline (from 8:42:01 PM initiation to 8:42:14 PM gateway socket timeout)
-  - Grounded AI Root Cause Analysis with expandable technical audit trail
-  - Policy & Regulatory Intelligence card with cited SLA clauses
-  - Prescriptive Resolution Recommendation with risk assessment
-- **AI Support Copilot:** Dedicated back-office dashboard featuring live dispute queues, one-click decision controls (*Approve Resolution*, *Escalate*, *Request Info*), and AI-generated case summaries.
-- **Incident Intelligence:** System-level topology graph linking 341 affected customers, transactions, and 82 merchants directly to a single degraded gateway (`PGW-East-02`).
-- **Split Payment Social Feature:** Multi-participant bill splitting (Equal Split, Custom Amount, Percentage) with integrated SMS reminders and settlement tracking.
-- **Service Intelligence Analytics:** Visual charts displaying dispute volume by issue type, resolution queue distributions, and SLA metrics labeled as synthetic demo data.
-
----
-
-## Architecture
-
-The project is structured with strict separation of concerns:
-
+```text
+Customer Complaint
+        │
+        ▼
+AI Complaint Understanding
+        │
+        ▼
+Transaction Identification
+        │
+        ▼
+Transaction Investigation
+        │
+        ▼
+Evidence Correlation
+        │
+        ▼
+Root-Cause Assessment
+        │
+        ▼
+Policy / FAQ Retrieval
+        │
+        ▼
+Resolution Recommendation
+        │
+        ▼
+Human Approval
+        │
+        ▼
+Case Resolution
 ```
+
+For incident-level analysis:
+
+```text
+Individual Transactions
+        │
+        ▼
+Failure Pattern Detection
+        │
+        ▼
+Related Transaction Clustering
+        │
+        ▼
+Possible Systemic Incident
+```
+
+---
+
+## 5. Technology Stack
+
+### Backend
+
+- Python 3.13
+- FastAPI
+- Uvicorn
+- Pydantic v2
+
+### Frontend
+
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Lucide Icons
+
+### AI / Intelligence Components
+
+- Natural-language complaint understanding
+- Entity and intent extraction
+- Structured investigation logic
+- Simulated RAG/policy retrieval
+- Rule-based transaction analysis
+- Root-cause assessment
+- Incident clustering
+- AI-assisted support summarization
+
+### Data
+
+The prototype uses synthetic datasets for:
+
+- Transactions
+- Dispute cases
+- Incident relationships
+- Policy/SOP information
+
+No real customer transaction records are included.
+
+---
+
+## 6. Project Structure
+
+```text
 AI Devfest/
 ├── backend/
 │   └── app/
 │       ├── ai/
-│       │   ├── complaint_parser.py   # Trilingual NLP entity & intent extractor
-│       │   ├── investigator.py       # Forensics orchestrator & evidence builder
-│       │   ├── policy_rag.py         # Simulated RAG policy retriever
-│       │   ├── resolution.py         # Prescriptive action & risk scoring
-│       │   ├── root_cause.py         # Grounded telemetry root-cause engine
-│       │   └── summarizer.py         # Support brief & customer status generator
+│       │   ├── complaint_parser.py
+│       │   ├── investigator.py
+│       │   ├── policy_rag.py
+│       │   ├── resolution.py
+│       │   ├── root_cause.py
+│       │   └── summarizer.py
+│       │
 │       ├── api/
-│       │   ├── analytics.py          # Metrics & dataset KPI endpoints
-│       │   ├── cases.py              # Case management, approval & escalation
-│       │   ├── complaints.py         # Natural language intake endpoints
-│       │   ├── incidents.py          # Systemic cluster detection & topology
-│       │   ├── investigations.py     # Deep forensics on transaction IDs
-│       │   ├── policies.py           # Upay SOP knowledge base queries
-│       │   ├── split_payments.py     # Split payment management
-│       │   └── transactions.py       # Ledger transaction queries
+│       │   ├── analytics.py
+│       │   ├── cases.py
+│       │   ├── complaints.py
+│       │   ├── incidents.py
+│       │   ├── investigations.py
+│       │   ├── policies.py
+│       │   ├── split_payments.py
+│       │   └── transactions.py
+│       │
 │       ├── data/
-│       │   ├── cases_data.py         # Seeded dispute cases & state mutations
-│       │   ├── incidents_data.py     # Systemic incident graph models
-│       │   ├── policies_data.py      # Upay SOPs & Bangladesh Bank directives
-│       │   └── synthetic_data.py     # 42+ synthetic transactions with rich states
+│       │   ├── cases_data.py
+│       │   ├── incidents_data.py
+│       │   ├── policies_data.py
+│       │   └── synthetic_data.py
+│       │
 │       ├── models/
-│       │   └── schemas.py            # Strongly typed Pydantic models
-│       └── main.py                   # FastAPI server & SPA static asset mount
+│       │   └── schemas.py
+│       │
+│       └── main.py
+│
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── admin/                # Support Copilot, Incidents, Analytics, Roadmap
-│   │   │   ├── common/               # Header, Badges, Modals, Landing Intro
-│   │   │   ├── customer/             # Dashboard, BalanceCard, Complaint Assistant, Split
-│   │   │   └── investigation/        # Transaction Detective, Evidence, Timeline, Root Cause
+│   │   │   ├── admin/
+│   │   │   ├── common/
+│   │   │   ├── customer/
+│   │   │   └── investigation/
 │   │   ├── services/
-│   │   │   └── api.ts                # Resilient typed API client
+│   │   │   └── api.ts
 │   │   ├── types/
-│   │   │   └── index.ts              # TypeScript interfaces
-│   │   ├── App.tsx                   # Master state coordinator & role switcher
-│   │   └── index.css                 # Upay emerald theme & fintech tokens
+│   │   │   └── index.ts
+│   │   ├── App.tsx
+│   │   └── index.css
 │   ├── tailwind.config.js
 │   └── vite.config.ts
+│
 ├── .env.example
 └── README.md
 ```
 
 ---
 
-## Tech Stack
+## 7. Requirements
 
-- **Backend:** Python 3.13, FastAPI 0.141, Uvicorn, Pydantic v2
-- **Frontend:** React 19, TypeScript, Vite 8, Tailwind CSS, Lucide Icons
-- **Design Language:** Upay Deep Emerald (`#00875A`), Forest Charcoal (`#0A2518`), and clean slate surfaces inspired by modern fintech products (Upay, Stripe, Linear, Apple)
-- **Typography:** Plus Jakarta Sans & Noto Sans Bengali
+Before running the project, install:
 
----
+- Python 3.10 or newer
+- Node.js 20 or newer
+- npm
+- Git
 
-## Demo Flow (90–120 Seconds)
+Recommended environment:
 
-Judges can test the complete end-to-end lifecycle in under two minutes:
-
-1. **Step 1 — Customer Dashboard:** View balance `৳24,580.00` and click *"Need help with a transaction?"*.
-2. **Step 2 — Natural Complaint:** Input: `"QR payment korechi, 2000 taka kete geche but merchant pay nai."` (or click the quick chip).
-3. **Step 3 — AI Understanding:** AI extracts: QR Payment, ৳2,000, Debited / Merchant Not Credited, High Priority, and candidate `TXN-8F31A2`.
-4. **Step 4 & 5 — Transaction Detective:** Click *"Investigate Transaction"* to open the deep forensics view for `TXN-8F31A2`.
-5. **Step 6 & 7 — Evidence & Timeline:** Inspect the 5 correlated telemetry cards and the sub-second timeline showing the 10,042ms gateway timeout.
-6. **Step 8, 9 & 10 — Diagnostics & Policy:** View the 92% confidence root cause, expand the technical audit trail, review Upay Policy Sec 4.2, and note the recommended batch reconciliation.
-7. **Step 11 & 12 — Support Copilot:** Toggle the header role switcher to *"Support Copilot"*. Review the AI executive brief on `CASE-1024` and click *"Approve Resolution"*.
-8. **Step 13 — Case Status:** Watch status transition from *Awaiting Approval* → *Resolved* with an immutable audit note.
-9. **Step 14 — Incident Intelligence:** Click *"Incident Intelligence"* to observe the systemic cluster of 341 transactions across 82 merchants.
-10. **Step 15 — Customer Confirmation:** Switch back to Customer View to see the green resolution banner: *"Your transaction has been reconciled and settled with ABC Cafe."*
+- Windows, macOS, or Linux
+- At least 4 GB RAM
+- Modern web browser
 
 ---
 
-## Security & Data Privacy
+## 8. Installation & Setup
 
-- **Data Minimization & Synthetic Data:** All records are purely synthetic. No private customer records or active banking networks are contacted.
-- **PII Tokenization:** Phone numbers and identifiers are masked (`+880 17••-••4567`) before reaching AI diagnostic prompts.
-- **Strict Role-Based Isolation:** Customers receive simple, reassuring explanations; support specialists access raw cryptographic telemetry.
-- **Human-in-the-Loop Safeguard:** The AI engine cannot autonomously trigger debits, credits, or reversals. A licensed human agent must review and approve all financial actions.
+### Step 1 — Clone the repository
 
----
-
-## Local Setup
-
-### Prerequisites
-- Python 3.10+ (FastAPI & Uvicorn)
-- Node.js 20+ & npm (for frontend dev server)
-
-### Option A: One-Click Quick Launch (Recommended)
-You can start both the backend API and frontend dev server with a single command:
-```powershell
-# Double-click or run from root:
-.\run_all.bat
+```bash
+git clone <PUBLIC_GITHUB_REPOSITORY_URL>
+cd <PROJECT_DIRECTORY>
 ```
-- **Backend API & Unified UI:** `http://127.0.0.1:8000/`
-- **Frontend Dev Server:** `http://localhost:5173/`
 
-### Option B: Run Unified Server (Single Terminal)
-Since the production React frontend is already pre-built inside `frontend/dist`, running the FastAPI server directly serves the complete Web App and all APIs simultaneously on port 8000:
+### Step 2 — Backend setup
+
+Create and activate a virtual environment:
+
+#### Windows
+
 ```powershell
-python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+python -m venv .venv
+.venv\Scripts\activate
 ```
-Open `http://127.0.0.1:8000/` in your browser. API docs at `http://127.0.0.1:8000/docs`.
 
-### Option C: Run Frontend Dev Server Separately
-```powershell
-# If using PowerShell in an existing terminal session:
-.\run_frontend.ps1
+#### macOS / Linux
 
-# Or in a Command Prompt / batch:
-.\run_frontend.bat
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 ```
-*(Note: If opening a new terminal tab, `node` and `npm` are also automatically in your PATH!)*
 
----
+Install backend dependencies:
 
-## Environment Variables
+```bash
+pip install -r requirements.txt
+```
 
-Copy `.env.example` to `.env`:
+### Step 3 — Frontend setup
+
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+### Step 4 — Environment configuration
+
+Copy the example environment file:
+
 ```bash
 cp .env.example .env
 ```
-Default configuration works out of the box with zero external API keys needed.
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+The current prototype is designed to run with synthetic data and does not require production banking credentials.
 
 ---
 
-## API Endpoints
+## 9. Environment Variables
 
-| Method | Endpoint | Description |
+Use `.env.example` as the source of truth for the required variables.
+
+Do not commit real secrets to GitHub.
+
+Example:
+
+```env
+# Example only
+API_BASE_URL=http://127.0.0.1:8000
+```
+
+If additional API keys or service credentials are introduced, document:
+
+1. Variable name
+2. Purpose
+3. Whether it is required
+4. Where to obtain it
+
+Never publish secret values in the repository.
+
+---
+
+## 10. Running the Project
+
+### Option A — Quick Launch
+
+If `run_all.bat` is included:
+
+```powershell
+.\run_all.bat
+```
+
+The application will be available at:
+
+```text
+http://127.0.0.1:8000/
+```
+
+### Option B — Run Backend
+
+```bash
+python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/
+```
+
+FastAPI documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### Option C — Run Frontend Separately
+
+From the project root:
+
+```powershell
+.\run_frontend.ps1
+```
+
+or:
+
+```powershell
+.\run_frontend.bat
+```
+
+The Vite development server runs at:
+
+```text
+http://localhost:5173/
+```
+
+---
+
+## 11. Demo / Testing Instructions
+
+The following flow demonstrates the main ResolveAI journey.
+
+### 1. Open Customer View
+
+Start from the customer dashboard and select:
+
+```text
+Need help with a transaction?
+```
+
+### 2. Submit a complaint
+
+Use:
+
+```text
+QR payment korechi, 2000 taka kete geche but merchant pay nai.
+```
+
+### 3. Review AI understanding
+
+The system should identify:
+
+- QR payment
+- ৳2,000
+- Customer debited
+- Merchant not credited
+- Candidate transaction
+
+### 4. Investigate the transaction
+
+Open the suggested transaction and select:
+
+```text
+Investigate Transaction
+```
+
+### 5. Review evidence
+
+Check:
+
+- Transaction metadata
+- Evidence cards
+- Timeline
+- Gateway/clearing events
+- Root-cause assessment
+
+### 6. Review policy information
+
+Open the policy section and review the relevant simulated policy/SOP information.
+
+### 7. Review resolution recommendation
+
+Check the recommended next action and its supporting information.
+
+### 8. Open Support Copilot
+
+Switch to:
+
+```text
+Support Copilot
+```
+
+Review the case summary and available actions.
+
+### 9. Approve the case
+
+For the demo case, use:
+
+```text
+Approve Resolution
+```
+
+The case should move from:
+
+```text
+Awaiting Approval → Resolved
+```
+
+### 10. Open Incident Intelligence
+
+Review the synthetic incident cluster showing related transactions and merchants.
+
+### 11. Return to Customer View
+
+Confirm that the customer-facing status reflects the resolved demonstration case.
+
+---
+
+## 12. API Reference
+
+| Method | Endpoint | Purpose |
 |---|---|---|
-| `POST` | `/api/complaints/analyze` | Parses natural language complaint (Bangla/Banglish/EN) |
-| `GET` | `/api/transactions` | Lists synthetic ledger transactions with filters |
-| `GET` | `/api/transactions/{id}` | Fetches individual transaction record |
-| `GET` | `/api/transactions/{id}/timeline` | Retrieves chronological millisecond timeline |
-| `POST` | `/api/investigations` | Executes full multi-source forensic investigation |
-| `GET` | `/api/cases` | Lists active dispute cases |
-| `POST` | `/api/cases/{id}/approve` | Approves resolution & executes batch reconciliation |
-| `POST` | `/api/cases/{id}/escalate` | Escalates dispute to Tier-3 Core Switching team |
-| `GET` | `/api/incidents` | Fetches systemic gateway cluster intelligence |
-| `GET` | `/api/analytics` | Provides operational dispute analytics |
-| `GET` | `/api/split-payments` | Lists split payment groups |
-| `POST` | `/api/split-payments` | Creates new bill split group |
-| `GET` | `/api/policies` | Queries simulated Upay SOP knowledge base |
+| POST | `/api/complaints/analyze` | Analyze Bangla/Banglish/English complaint |
+| GET | `/api/transactions` | List synthetic transactions |
+| GET | `/api/transactions/{id}` | Get a transaction |
+| GET | `/api/transactions/{id}/timeline` | Get transaction timeline |
+| POST | `/api/investigations` | Run transaction investigation |
+| GET | `/api/cases` | List dispute cases |
+| POST | `/api/cases/{id}/approve` | Approve a resolution |
+| POST | `/api/cases/{id}/escalate` | Escalate a case |
+| GET | `/api/incidents` | Retrieve incident intelligence |
+| GET | `/api/analytics` | Retrieve demo analytics |
+| GET | `/api/split-payments` | List split-payment groups |
+| POST | `/api/split-payments` | Create a split-payment group |
+| GET | `/api/policies` | Query simulated policy information |
 
 ---
 
-## Hackathon Scope & Disclaimer
+## 13. Security & Data Handling
 
-> [!IMPORTANT]
-> **Hackathon Prototype Notice:**  
-> This application is a hackathon MVP built to demonstrate how AI can understand, investigate, and explain transaction problems inside a digital wallet ecosystem.  
-> It uses realistic synthetic mock data and does **NOT** connect to real Upay banking infrastructure, core banking systems (CBS), or live payment gateways. All statistics and metrics are clearly labeled as synthetic demo data.
+This prototype is intentionally isolated from real financial infrastructure.
+
+### Synthetic data
+
+All transaction, customer, case, and incident records used by the MVP are synthetic demonstration data.
+
+### No live banking connection
+
+The application does not connect to:
+
+- Live Upay banking infrastructure
+- Core banking systems
+- Live payment gateways
+- Real customer transaction databases
+
+### Human approval
+
+The AI layer does not independently authorize financial actions. The prototype keeps a human approval step before the demonstrated resolution action.
+
+### Sensitive information
+
+No real customer credentials or production secrets should be committed to the repository.
 
 ---
 
-## Future Roadmap
+## 14. External Resources & Pre-existing Components
 
-- **Phase 1 (Current):** End-to-end AI transaction resolution, Transaction Detective, Evidence Engine, RAG policy retrieval, and Support Copilot.
-- **Phase 2:** Live vector embeddings (pgvector) for Upay policy knowledge bases, merchant self-service dispute acknowledgments, and automated batch reconciliation webhooks.
-- **Phase 3:** Predictive failure routing (switching away from degraded gateways before timeouts occur) and Bangla Voice AI telephone support.
+The project uses general-purpose development technologies and libraries that are permitted for the hackathon, including:
+
+- Python
+- FastAPI
+- Uvicorn
+- Pydantic
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Lucide Icons
+
+The project also uses synthetic, project-specific demonstration data created for the prototype.
+
+Any external API, model, dataset, service, or additional pre-existing component introduced during development should be listed here and documented with its purpose and source.
+
+### Current external-service status
+
+The current MVP is designed to run without a live external banking API and does not use real Upay transaction data.
 
 ---
 
-## Team
+## 15. Hackathon Scope
 
-Built with ❤️ for the AI Hackathon.
+UPAY ResolveAI is a challenge-specific prototype developed as an MVP for the AI Hackathon.
+
+The current implementation focuses on demonstrating:
+
+1. Complaint understanding
+2. Transaction investigation
+3. Evidence correlation
+4. Root-cause assessment
+5. Policy/FAQ intelligence
+6. Resolution recommendation
+7. Human approval
+8. Incident-level pattern detection
+
+The prototype is not presented as a production banking system.
+
+---
+
+## 16. Development & Submission Notes
+
+The project repository is maintained on GitHub so that the development process can be reviewed.
+
+During the contest period, meaningful changes should be committed progressively, including:
+
+- Feature implementation
+- UI changes
+- Backend changes
+- AI logic changes
+- Bug fixes
+- Integration work
+- Final-day updates
+
+The repository should retain the development history rather than replacing it with a single final upload.
+
+> **Team submission note:** The Git history should be kept continuous throughout the applicable contest phases, including the initial development period and any on-site update period.
+
+---
+
+## 17. Live Deployment
+
+**Live Demo:** `<ADD_FINAL_DEPLOYMENT_URL_HERE>`
+
+If the deployment is not publicly accessible, judges can run the project locally using the setup instructions above.
+
+---
+
+## 18. Current Status & Roadmap
+
+### Phase 1 — Current MVP
+
+- AI transaction complaint analysis
+- Transaction Detective
+- Evidence Engine
+- Policy/FAQ retrieval
+- Root-cause assessment
+- Resolution recommendation
+- Support Copilot
+- Incident Intelligence
+
+### Phase 2 — Planned Expansion
+
+- Vector-based policy retrieval
+- Merchant-side dispute acknowledgement
+- Automated reconciliation webhooks
+- Broader transaction intelligence
+
+### Phase 3 — Longer-term Direction
+
+- Predictive failure routing
+- Bangla voice-based support
+- Earlier detection of gateway degradation
+
+---
+
+## 19. Important Prototype Disclaimer
+
+UPAY ResolveAI is a hackathon prototype.
+
+The transaction records, customer information, incident counts, analytics, and investigation results shown in the application are synthetic demonstration data.
+
+Figures such as **92% confidence**, **341 related transactions**, and **82 merchants** represent prototype scenarios and should not be interpreted as real Upay operational statistics or production model performance.
+
+The system is intended to demonstrate the concept of AI-assisted transaction investigation and resolution, not to represent a live financial infrastructure integration.
+
+---
+
+## 20. Team
+
+**UPAY ResolveAI**
+
+Built for the **AI DevFest 2026 AI Hackathon**.
+
+> **Understand. Investigate. Resolve.**
