@@ -209,11 +209,12 @@ async def analyze_complaint(
     Processes natural language Bengali/Banglish complaints through:
     Complaint -> Intent -> Matcher -> Evidence -> Timeline -> Root Cause -> Policy -> Risk -> Recommendation
     """
-    if not payload.complaint_text or not payload.complaint_text.strip():
-        raise HTTPException(status_code=400, detail="complaint_text cannot be empty")
+    query_text = payload.text
+    if not query_text:
+        raise HTTPException(status_code=400, detail="Complaint text cannot be empty. Please provide complaint or complaint_text.")
         
     final_investigation = await investigation_orchestrator.run_investigation(
-        complaint_text=payload.complaint_text,
+        complaint_text=query_text,
         user_id=payload.user_id or "USR-ALFI-01",
         explicit_txn_id=payload.trx_id,
         db=db

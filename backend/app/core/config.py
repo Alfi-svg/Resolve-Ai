@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Optional
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -22,6 +22,8 @@ class Settings(BaseSettings):
 
     DEMO_AI_MODE: bool = True
     AI_PROVIDER: str = "demo_deterministic"
+    GEMINI_API_KEY: Optional[str] = None
+    AI_MODE: str = "demo"  # "gemini" or "demo"
 
     @field_validator("CORS_ORIGINS", mode="before")
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:

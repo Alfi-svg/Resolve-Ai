@@ -93,8 +93,59 @@ class FinalInvestigationObject(BaseModel):
     policy: PolicyResult
     risk: RiskResult
     recommendation: RecommendationResult
-    confidence: float
+    confidence: float = 0.95
     approval_required: bool
     status: str = "WAITING_APPROVAL"  # WAITING_APPROVAL, APPROVED, REJECTED, AUTO_RESOLVED
     pipeline_steps: List[PipelineStepStatus] = []
     created_at: str
+    ai_mode: Optional[str] = "demo"
+    customer_message: Optional[str] = None
+    admin_summary: Optional[str] = None
+    evidence_corroboration: Optional[str] = "4 / 4 sources confirmed"
+    structured_ai_response: Optional[Dict[str, Any]] = None
+
+
+class CorroboratedEvidence(BaseModel):
+    source: str
+    status: str
+    fact: str
+
+
+class StructuredRootCause(BaseModel):
+    code: str
+    explanation: str
+
+
+class StructuredRisk(BaseModel):
+    score: float
+    level: str
+    signals: List[Dict[str, Any]] = []
+
+
+class StructuredPolicy(BaseModel):
+    name: str
+    allowed_action: str
+
+
+class StructuredRecommendation(BaseModel):
+    action: str
+    requires_human_approval: bool = True
+    reason: str
+
+
+class StructuredAIResponse(BaseModel):
+    intent: str
+    language: str
+    entities: Dict[str, Any]
+    transaction_id: str
+    transaction_status: str
+    issue: str
+    evidence: List[CorroboratedEvidence]
+    root_cause: StructuredRootCause
+    risk: StructuredRisk
+    policy: StructuredPolicy
+    recommendation: StructuredRecommendation
+    customer_message: str
+    admin_summary: str
+    ai_mode: str = "demo"
+

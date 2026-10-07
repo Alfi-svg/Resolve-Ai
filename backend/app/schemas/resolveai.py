@@ -6,8 +6,14 @@ from app.schemas.common import AIReasoningStep
 
 class ResolveAIRequest(BaseModel):
     user_id: Optional[str] = "USR-ALFI-01"
-    complaint_text: str
+    complaint_text: Optional[str] = None
+    complaint: Optional[str] = None
     trx_id: Optional[str] = None
+    language: Optional[str] = "auto"
+
+    @property
+    def text(self) -> str:
+        return (self.complaint or self.complaint_text or "").strip()
 
 
 class ResolveAIAnalysis(BaseModel):

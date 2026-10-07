@@ -23,8 +23,8 @@ async def investigate_complaint(
     Returns the complete Final Investigation Object.
     """
     final_investigation = await investigation_orchestrator.run_investigation(
-        complaint_text=payload.complaint_text,
-        user_id=payload.user_id,
+        complaint_text=payload.text,
+        user_id=payload.user_id or "USR-ALFI-01",
         explicit_txn_id=payload.trx_id,
         db=db
     )

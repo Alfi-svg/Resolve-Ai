@@ -82,7 +82,72 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   // Active pending case for banner
   const activeCase = cases.find((c) => c.status === "OPEN" || c.status === "INVESTIGATING") || cases[0];
-  const recentTxns = transactions.slice(0, 4);
+
+  // Canonical presentation transactions matching Section 3 specification
+  const defaultRecentTxns: SyntheticTransaction[] = [
+    {
+      id: "TXN-8F31A2",
+      user_id: "USR-001",
+      merchant_id: "MERCH-ABC-01",
+      type: "QR_PAYMENT",
+      amount: 2000.0,
+      currency: "BDT",
+      status: "PARTIAL_FAILURE",
+      channel: "QR",
+      device_id: "DEV-IPHONE-14",
+      location: "Banani, Dhaka",
+      created_at: new Date(Date.now() - 18 * 60 * 1000).toISOString(),
+      failure_code: "GW_TIMEOUT_504",
+      gateway_id: "GW-BRAC-SWITCH",
+      meta_info: {
+        merchant_name: "ABC Cafe",
+        qr_format: "BANGLA_QR",
+        pos_terminal_id: "ABC-POS-04",
+        counter: "Counter #2 (Pastry & Coffee)"
+      }
+    },
+    {
+      id: "TXN-RAHIM-500",
+      user_id: "USR-001",
+      type: "SEND_MONEY",
+      amount: 500.0,
+      currency: "BDT",
+      status: "SUCCESS",
+      channel: "APP",
+      device_id: "DEV-IPHONE-14",
+      location: "Dhaka, BD",
+      created_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
+      meta_info: {
+        recipient_name: "Rahim",
+        recipient_phone: "+880 1812-998877"
+      }
+    },
+    {
+      id: "TXN-UNIV-400",
+      user_id: "USR-001",
+      merchant_id: "MERCH-UNIV-01",
+      type: "MERCHANT_PAYMENT",
+      amount: 400.0,
+      currency: "BDT",
+      status: "SUCCESS",
+      channel: "APP",
+      device_id: "DEV-IPHONE-14",
+      location: "DU Campus, Dhaka",
+      created_at: new Date(Date.now() - 26 * 3600 * 1000).toISOString(),
+      meta_info: {
+        merchant_name: "University Store",
+        benefit_category: "Student Benefit"
+      }
+    }
+  ];
+
+  // Ensure TXN-8F31A2 is prominent and matches the 3 benchmark items
+  const heroTxn = transactions.find((t) => t.id === "TXN-8F31A2") || defaultRecentTxns[0];
+  const otherLiveTxns = transactions.filter((t) => t.id !== "TXN-8F31A2");
+  const recentTxns: SyntheticTransaction[] = [
+    heroTxn,
+    ...(otherLiveTxns.length >= 2 ? otherLiveTxns.slice(0, 2) : defaultRecentTxns.slice(1))
+  ];
 
   return (
     <div className="space-y-6">
@@ -272,56 +337,84 @@ export const HomeView: React.FC<HomeViewProps> = ({
         ) : (
           <div className="divide-y divide-surface-border">
             {recentTxns.map((tx) => {
-              const isPartialFail = tx.status === "PARTIAL_FAILURE";
+              const isHeroProblem = tx.id === "TXN-8F31A2";
+              const isPartialFail = tx.status === "PARTIAL_FAILURE" || isHeroProblem;
               const isFailed = tx.status === "FAILED";
-            return (
-              <div
-                key={tx.id}
-                onClick={() => onSelectTransaction(tx)}
-                className="py-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-surface-subtle/70 rounded-xl px-2 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                    isPartialFail ? "bg-amber-100 text-amber-700" :
-                    isFailed ? "bg-rose-100 text-rose-700" : "bg-upay-100 text-upay-800"
-                  }`}>
-                    {tx.type === "QR_PAYMENT" ? <QrCode className="w-4 h-4" /> :
-                     tx.type === "SEND_MONEY" ? <Send className="w-4 h-4" /> :
-                     <Receipt className="w-4 h-4" />}
-                  </div>
-                  <div>
-                    <h5 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                      {tx.meta_info?.pos_counter ? `Shwapno Superstore` :
-                       tx.merchant_id === "MERCH-ABC-01" ? "ABC Cafe" :
-                       tx.type.replace(/_/g, " ")}
-                      {isPartialFail && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                          Disputed
-                        </span>
-                      )}
-                    </h5>
-                    <p className="text-[11px] text-gray-500 font-mono">
-                      {tx.id} &bull; {formatDate(tx.created_at)}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="text-right">
-                  <span className={`text-xs font-extrabold block ${
-                    isPartialFail ? "text-amber-800" : "text-gray-900"
-                  }`}>
-                    {formatBDT(tx.amount)}
-                  </span>
-                  <span className={`text-[10px] font-semibold uppercase ${
-                    isPartialFail ? "text-amber-600" :
-                    isFailed ? "text-rose-600" : "text-emerald-700"
-                  }`}>
-                    {tx.status.replace(/_/g, " ")}
-                  </span>
+              // Exact titles and category indicators matching Section 3 specification
+              const title = isHeroProblem
+                ? "ABC Cafe"
+                : tx.meta_info?.recipient_name ||
+                  (tx.meta_info?.benefit_category ? "University Store" : (tx.merchant_id === "MERCH-ABC-01" ? "ABC Cafe" : tx.type.replace(/_/g, " ")));
+              
+              const subtitle = isHeroProblem
+                ? "QR Payment"
+                : tx.meta_info?.benefit_category
+                ? "Student Benefit"
+                : tx.type === "SEND_MONEY"
+                ? "Send Money"
+                : tx.type.replace(/_/g, " ");
+
+              return (
+                <div
+                  key={tx.id}
+                  onClick={() => {
+                    onSelectTransaction(tx);
+                    if (isHeroProblem) {
+                      onNavigate("ResolveAI");
+                    }
+                  }}
+                  className={`py-3 flex items-center justify-between gap-3 cursor-pointer rounded-xl px-2.5 transition-all ${
+                    isHeroProblem
+                      ? "bg-amber-50/70 hover:bg-amber-100/80 border border-amber-200/80 my-1"
+                      : "hover:bg-surface-subtle/70"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      isHeroProblem ? "bg-amber-100 text-amber-800 ring-2 ring-amber-300/50" :
+                      isFailed ? "bg-rose-100 text-rose-700" : "bg-upay-100 text-upay-800"
+                    }`}>
+                      {tx.type === "QR_PAYMENT" ? <QrCode className="w-4 h-4" /> :
+                       tx.type === "SEND_MONEY" ? <Send className="w-4 h-4" /> :
+                       <Receipt className="w-4 h-4" />}
+                    </div>
+                    <div>
+                      <h5 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                        {title}
+                        {isHeroProblem ? (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            Problem detected
+                          </span>
+                        ) : isPartialFail ? (
+                          <span className="text-[10px] px-1.5 py-0.2 rounded font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            Disputed
+                          </span>
+                        ) : null}
+                      </h5>
+                      <p className="text-[11px] text-gray-500 font-mono">
+                        {subtitle} &bull; {tx.id} &bull; {formatDate(tx.created_at)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className={`text-xs font-extrabold block ${
+                      isHeroProblem ? "text-amber-900" : "text-gray-900"
+                    }`}>
+                      -{formatBDT(tx.amount)}
+                    </span>
+                    <span className={`text-[10px] font-semibold uppercase ${
+                      isHeroProblem ? "text-amber-700 font-bold" :
+                      isFailed ? "text-rose-600" : "text-emerald-700"
+                    }`}>
+                      {isHeroProblem ? "Action Required" : "Completed"}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       )}
     </div>

@@ -24,7 +24,11 @@ import {
   Activity,
   RotateCcw,
   FileCheck2,
-  Layers
+  Layers,
+  QrCode,
+  PlusCircle,
+  ArrowDownLeft,
+  Smartphone
 } from "lucide-react";
 import { formatBDT } from "@/lib/utils";
 import { SyntheticTransaction } from "@/types/synthetic";
@@ -59,6 +63,70 @@ export const ResolveAIChatView: React.FC<ResolveAIChatViewProps> = ({
   const [investigationResult, setInvestigationResult] = useState<any | null>(null);
   const [showAITimeline, setShowAITimeline] = useState<boolean>(true);
   const chatBottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const quickProblemCategories = [
+    {
+      id: "deducted_not_received",
+      title: "Money deducted but not received",
+      icon: ArrowDownLeft,
+      prompt: "QR payment korechi, taka kete geche but merchant pay nai."
+    },
+    {
+      id: "cash_out_fail",
+      title: "Cash Out problem",
+      icon: Smartphone,
+      prompt: "Cash out at agent point failed, but money was deducted from wallet."
+    },
+    {
+      id: "add_money_fail",
+      title: "Add Money problem",
+      icon: PlusCircle,
+      prompt: "Bank card debited for Add Money, but Upay balance not credited."
+    },
+    {
+      id: "qr_failed",
+      title: "QR payment failed",
+      icon: QrCode,
+      prompt: "Bangla QR scan payment debited but merchant counter says failed."
+    },
+    {
+      id: "duplicate_charge",
+      title: "Duplicate transaction",
+      icon: Receipt,
+      prompt: "Accidentally charged twice for the same transaction."
+    },
+    {
+      id: "refund_pending",
+      title: "Refund pending",
+      icon: RefreshCw,
+      prompt: "Merchant approved refund but money has not returned to wallet."
+    },
+    {
+      id: "unknown_txn",
+      title: "Unknown transaction",
+      icon: AlertCircle,
+      prompt: "Unrecognized transaction appearing on statement."
+    },
+    {
+      id: "other",
+      title: "Other transaction issue",
+      icon: HelpCircle,
+      prompt: ""
+    }
+  ];
+
+  const stepsList: string[] = [
+    "Complaint Understanding",
+    "Entity Extraction",
+    "Transaction Identification",
+    "Evidence Correlation (4 / 4 sources)",
+    "Timeline Reconstruction",
+    "Root Cause Analysis",
+    "Policy Intelligence",
+    "Risk Guard",
+    "Recommendation"
+  ];
 
   // Generate structured AI Process Timeline stages matching canonical pipeline
   const getStagesFromResult = (res: any): AIProcessStage[] => {
@@ -399,15 +467,6 @@ export const ResolveAIChatView: React.FC<ResolveAIChatViewProps> = ({
     "I was asked to send money to unlock my account.",
     "Cash out at agent point failed, but money was deducted from wallet.",
     "Accidentally sent 5,000 tk to an incorrect phone number."
-  ];
-
-  const stepsList: string[] = [
-    "Understanding complaint",
-    "Identifying transaction",
-    "Checking transaction events",
-    "Investigating payment gateway",
-    "Checking resolution policy",
-    "Generating recommendation"
   ];
 
   // Auto-scroll as messages appear
@@ -905,228 +964,292 @@ export const ResolveAIChatView: React.FC<ResolveAIChatViewProps> = ({
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-upay-900 to-upay-700 text-white flex items-center justify-center shadow-sm">
-            <Sparkles className="w-5 h-5 text-emerald-300" />
-          </div>
-          <div>
-            <h2 className="text-lg font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
-              ResolveAI Assistant
-              <Badge variant="brand" className="text-[10px] uppercase">
-                Autonomous
-              </Badge>
-            </h2>
-            <p className="text-xs text-gray-500">
-              Explain any transaction problem in Bangla, Banglish, or English. Our AI will investigate the ledger.
-            </p>
-          </div>
-        </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Hero Header Card */}
+      <div className="bg-gradient-to-br from-upay-950 via-upay-900 to-slate-950 rounded-3xl p-6 sm:p-8 text-white shadow-card relative overflow-hidden">
+        {/* Subtle decorative radial emerald glows */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 w-60 h-60 bg-teal-500/10 rounded-full blur-2xl pointer-events-none" />
 
-        {selectedTxn && (
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-xl bg-surface-subtle border border-surface-border text-xs">
-            <span className="text-gray-500">Linked:</span>
-            <span className="font-mono font-bold text-upay-900">{selectedTxn.id}</span>
-            <button 
-              onClick={() => setSelectedTxn(null)} 
-              className="text-gray-400 hover:text-gray-600 text-xs ml-1"
-            >
-              &times;
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Main Chat / Interaction Area */}
-      <div className="bg-white rounded-3xl border border-surface-border shadow-card p-6 space-y-6">
-        {/* Intro Message Bubble from ResolveAI */}
-        <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-xl bg-upay-100 text-upay-800 flex items-center justify-center shrink-0">
-            <Bot className="w-4 h-4" />
-          </div>
-          <div className="space-y-2 max-w-xl">
-            <div className="p-4 rounded-2xl rounded-tl-sm bg-surface-subtle border border-surface-border text-xs text-gray-800 space-y-1.5 leading-relaxed">
-              <p className="font-semibold text-gray-900">
-                Hello Alfi! I am ResolveAI, Upay&apos;s transaction dispute investigator.
-              </p>
-              <p>
-                Did a payment fail? Money deducted without merchant confirmation? Describe what happened below, or pick a sample issue to start:
-              </p>
-            </div>
-
-            {/* Multilingual NLP Intent Showcase */}
-            {!investigationResult && !isInvestigating && (
-              <div className="space-y-2 pt-2">
-                <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-300 text-xs space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-upay-950 text-[11px] uppercase tracking-wide flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-upay-700" />
-                      Multilingual NLP Intent Benchmark
-                    </span>
-                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-md">
-                      Same Intent: WALLET_DEBITED_MERCHANT_NOT_CREDITED
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-gray-600">
-                    Test multilingual intent mapping across English, Banglish, and native Bangla script:
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const q = "Money cut but shopkeeper didn't get it";
-                        setComplaintText(q);
-                        handleStartInvestigation(q);
-                      }}
-                      className="p-2.5 rounded-xl bg-white hover:bg-emerald-100 border border-emerald-200 text-left transition-all text-xs group"
-                    >
-                      <span className="text-[10px] font-bold uppercase text-gray-600 block">English</span>
-                      <strong className="text-upay-900 text-[11px] group-hover:text-upay-950">&ldquo;Money cut but shopkeeper didn&apos;t get it&rdquo;</strong>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const q = "taka katshe kintu dokandar pay nai";
-                        setComplaintText(q);
-                        handleStartInvestigation(q);
-                      }}
-                      className="p-2.5 rounded-xl bg-white hover:bg-emerald-100 border border-emerald-200 text-left transition-all text-xs group"
-                    >
-                      <span className="text-[10px] font-bold uppercase text-gray-600 block">Banglish</span>
-                      <strong className="text-upay-900 text-[11px] group-hover:text-upay-950">&ldquo;taka katshe kintu dokandar pay nai&rdquo;</strong>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const q = "টাকা কেটেছে কিন্তু দোকানদার পায়নি";
-                        setComplaintText(q);
-                        handleStartInvestigation(q);
-                      }}
-                      className="p-2.5 rounded-xl bg-white hover:bg-emerald-100 border border-emerald-200 text-left transition-all text-xs group"
-                    >
-                      <span className="text-[10px] font-bold uppercase text-gray-600 block">Bangla</span>
-                      <strong className="text-upay-900 text-[11px] group-hover:text-upay-950">&ldquo;টাকা কেটেছে কিন্তু দোকানদার পায়নি&rdquo;</strong>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Additional Quick Prompt Suggestions */}
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {samplePrompts.slice(1).map((prompt, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => {
-                        setComplaintText(prompt);
-                        handleStartInvestigation(prompt);
-                      }}
-                      className="text-[11px] font-medium text-upay-800 bg-surface-subtle hover:bg-upay-50 border border-surface-border rounded-xl px-3 py-1.5 text-left transition-all"
-                    >
-                      &ldquo;{prompt}&rdquo;
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* User Submitted Message (if any) */}
-        {complaintText && (currentStepIndex >= 0 || investigationResult) && (
-          <div className="flex items-start justify-end gap-3">
-            <div className="p-4 rounded-2xl rounded-tr-sm bg-upay-800 text-white text-xs max-w-md shadow-sm">
-              <p>{complaintText}</p>
-            </div>
-            <div className="w-8 h-8 rounded-xl bg-upay-900 text-white flex items-center justify-center shrink-0">
-              <UserIcon className="w-4 h-4 text-emerald-300" />
-            </div>
-          </div>
-        )}
-
-        {/* Visible Progressive AI Reasoning Box */}
-        {(isInvestigating || (currentStepIndex >= 0 && !investigationResult)) && (
-          <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/70 to-teal-50/50 border border-emerald-200 space-y-4 animate-in fade-in">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-upay-700 animate-spin" />
-                <span className="text-xs font-bold text-upay-900">
-                  Analyzing your transaction...
-                </span>
-              </div>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                Step {Math.min(currentStepIndex + 1, stepsList.length)} of {stepsList.length}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-xl">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-emerald-400" />
+                Autonomous Transaction Intelligence
               </span>
+              {selectedTxn && (
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 text-white border border-white/20">
+                  Linked: {selectedTxn.id}
+                </span>
+              )}
             </div>
 
-            <div className="space-y-2 text-xs font-mono">
-              {stepsList.map((step, idx) => {
-                const isPassed = currentStepIndex > idx;
-                const isCurrent = currentStepIndex === idx;
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+              ResolveAI &mdash; Your transaction problem, investigated.
+            </h1>
 
-                return (
-                  <div key={idx} className="flex items-center gap-2.5 transition-all">
-                    {isPassed ? (
-                      <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        <span className="text-gray-800">{step}</span>
-                      </span>
-                    ) : isCurrent ? (
-                      <span className="text-upay-900 font-bold flex items-center gap-1.5 animate-pulse">
-                        <span className="w-4 h-4 rounded-full bg-upay-700 text-white text-[10px] flex items-center justify-center">
-                          &bull;
-                        </span>
-                        <span className="text-upay-900 underline">{step}...</span>
-                      </span>
-                    ) : (
-                      <span className="text-gray-400 flex items-center gap-1.5">
-                        <span className="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center text-[10px]">
-                          ○
-                        </span>
-                        <span>{step}</span>
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Autonomous multi-system evidence correlation, policy evaluation &amp; automated resolution under strict dual-control governance.
+            </p>
+
+            {/* Hero CTA Buttons */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  inputRef.current?.focus();
+                  inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }}
+                className="gap-2 shadow-sm font-bold text-xs px-4 py-2"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                Report a Transaction Problem
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onNavigateToCases}
+                className="gap-2 text-white border-white/20 hover:bg-white/10 font-semibold text-xs px-4 py-2"
+              >
+                <FileText className="w-3.5 h-3.5 text-slate-300" />
+                View Active Cases
+              </Button>
             </div>
           </div>
-        )}
 
-        <div ref={chatBottomRef} />
+          {/* Quick Stats Pill */}
+          <div className="flex md:flex-col gap-3 shrink-0">
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md text-xs space-y-1 min-w-[140px]">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">SLA Target</span>
+              <strong className="text-white text-sm block">&lt; 15 Minutes</strong>
+              <span className="text-[10px] text-emerald-300">Automated ledger recon</span>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md text-xs space-y-1 min-w-[140px]">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">Evidence Sources</span>
+              <strong className="text-white text-sm block">4 of 4 Corroborated</strong>
+              <span className="text-[10px] text-emerald-300">Switch &bull; Ledger &bull; Gateway</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Input Form at Bottom */}
-      <div className="bg-white rounded-2xl p-3 border border-surface-border shadow-card flex items-center gap-2">
-        <input
-          type="text"
-          placeholder="Describe your transaction problem (e.g., QR payment cut money, merchant didn't receive)..."
-          value={complaintText}
-          onChange={(e) => setComplaintText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleStartInvestigation();
-            }
-          }}
-          disabled={isInvestigating}
-          className="flex-1 px-4 py-2 text-xs bg-surface-subtle rounded-xl border border-surface-border focus:outline-none focus:ring-2 focus:ring-upay-700 focus:bg-white text-gray-900 transition-all"
-        />
+      {/* 8 Quick Problem Categories */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-upay-700" />
+            Quick Problem Categories
+          </h2>
+          <span className="text-[11px] text-gray-400">Select any issue to auto-fill</span>
+        </div>
 
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => handleStartInvestigation()}
-          disabled={!complaintText.trim() || isInvestigating}
-          className="px-4 py-2 gap-1.5"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-          <span>Investigate</span>
-        </Button>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {quickProblemCategories.map((cat) => {
+            const Icon = cat.icon;
+            const isSelected = complaintText === cat.prompt;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => {
+                  if (cat.prompt) {
+                    setComplaintText(cat.prompt);
+                  } else {
+                    setComplaintText("");
+                  }
+                  inputRef.current?.focus();
+                }}
+                className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-3 group ${
+                  isSelected
+                    ? "bg-emerald-50/90 border-emerald-500 shadow-sm ring-1 ring-emerald-500/30"
+                    : "bg-white border-surface-border hover:border-emerald-300 hover:shadow-card hover:bg-emerald-50/30"
+                }`}
+              >
+                <div className="w-8 h-8 rounded-xl bg-surface-subtle group-hover:bg-emerald-100/80 text-upay-800 flex items-center justify-center transition-colors">
+                  <Icon className="w-4 h-4 text-upay-700" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-gray-900 group-hover:text-upay-950 leading-tight">
+                    {cat.title}
+                  </h3>
+                  <p className="text-[10px] text-gray-400 mt-1 line-clamp-1">
+                    {cat.prompt || "Describe custom issue"}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
+
+      {/* Multilingual NLP Benchmark Card */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-emerald-50/90 border border-emerald-200/80 shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+          <span className="font-extrabold text-upay-950 text-xs uppercase tracking-wide flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-upay-700" />
+            Multilingual NLP Intent Benchmark
+          </span>
+          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-md self-start sm:self-auto">
+            Intent: WALLET_DEBITED_MERCHANT_NOT_CREDITED
+          </span>
+        </div>
+
+        <p className="text-[11px] text-gray-600 leading-relaxed">
+          Test multilingual intent mapping across English, Romanized Bengali (Banglish), and native Bangla script:
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button
+            type="button"
+            onClick={() => {
+              const q = "Money cut but shopkeeper didn't get it";
+              setComplaintText(q);
+              handleStartInvestigation(q);
+            }}
+            className="p-3 rounded-xl bg-white hover:bg-emerald-100/70 border border-emerald-200 text-left transition-all shadow-xs group"
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-bold uppercase text-gray-500">English</span>
+              <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">en-US</span>
+            </div>
+            <strong className="text-upay-950 text-xs block group-hover:text-emerald-950">
+              &ldquo;Money cut but shopkeeper didn&apos;t get it&rdquo;
+            </strong>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const q = "taka katshe kintu dokandar pay nai";
+              setComplaintText(q);
+              handleStartInvestigation(q);
+            }}
+            className="p-3 rounded-xl bg-white hover:bg-emerald-100/70 border border-emerald-200 text-left transition-all shadow-xs group"
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-bold uppercase text-gray-500">Banglish</span>
+              <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">bn-Latn</span>
+            </div>
+            <strong className="text-upay-950 text-xs block group-hover:text-emerald-950">
+              &ldquo;taka katshe kintu dokandar pay nai&rdquo;
+            </strong>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const q = "টাকা কেটেছে কিন্তু দোকানদার পায়নি";
+              setComplaintText(q);
+              handleStartInvestigation(q);
+            }}
+            className="p-3 rounded-xl bg-white hover:bg-emerald-100/70 border border-emerald-200 text-left transition-all shadow-xs group"
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-bold uppercase text-gray-500">Bangla</span>
+              <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">bn-BD</span>
+            </div>
+            <strong className="text-upay-950 text-xs block group-hover:text-emerald-950">
+              &ldquo;টাকা কেটেছে কিন্তু দোকানদার পায়নি&rdquo;
+            </strong>
+          </button>
+        </div>
+      </div>
+
+      {/* Progressive AI Reasoning Box (When investigation is actively running) */}
+      {(isInvestigating || (currentStepIndex >= 0 && !investigationResult)) && (
+        <div className="p-6 rounded-3xl bg-white border border-emerald-200 shadow-card space-y-4 animate-in fade-in">
+          <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+            <div className="flex items-center gap-2.5">
+              <RefreshCw className="w-4 h-4 text-upay-700 animate-spin" />
+              <h3 className="text-xs font-extrabold text-upay-950 uppercase tracking-wide">
+                Executing Multi-Source Evidentiary Forensics
+              </h3>
+            </div>
+            <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">
+              Stage {Math.min(currentStepIndex + 1, stepsList.length)} of {stepsList.length}
+            </span>
+          </div>
+
+          <div className="space-y-2.5 text-xs font-mono">
+            {stepsList.map((step, idx) => {
+              const isPassed = currentStepIndex > idx;
+              const isCurrent = currentStepIndex === idx;
+
+              return (
+                <div key={idx} className="flex items-center gap-2.5 transition-all">
+                  {isPassed ? (
+                    <span className="text-emerald-700 font-bold flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span className="text-gray-800 font-sans text-xs font-medium">{step}</span>
+                    </span>
+                  ) : isCurrent ? (
+                    <span className="text-upay-950 font-bold flex items-center gap-2 animate-pulse">
+                      <span className="w-4 h-4 rounded-full bg-upay-700 text-white text-[10px] flex items-center justify-center shrink-0">
+                        &bull;
+                      </span>
+                      <span className="text-upay-950 font-sans text-xs underline font-bold">{step}...</span>
+                    </span>
+                  ) : (
+                    <span className="text-gray-400 flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center text-[10px] shrink-0">
+                        ○
+                      </span>
+                      <span className="font-sans text-xs">{step}</span>
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Main Input Form with Ref */}
+      <div className="bg-white rounded-3xl p-4 sm:p-5 border border-surface-border shadow-card space-y-3">
+        <label className="text-xs font-bold text-gray-700 block">
+          Describe what happened with your transaction:
+        </label>
+
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Describe your issue in Bangla, Banglish, or English (e.g., QR payment cut money, merchant didn't receive)..."
+            value={complaintText}
+            onChange={(e) => setComplaintText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleStartInvestigation();
+              }
+            }}
+            disabled={isInvestigating}
+            className="flex-1 px-4 py-3 text-xs bg-surface-subtle rounded-2xl border border-surface-border focus:outline-none focus:ring-2 focus:ring-upay-700 focus:bg-white text-gray-900 transition-all"
+          />
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => handleStartInvestigation()}
+            disabled={!complaintText.trim() || isInvestigating}
+            className="px-5 py-3 gap-2 font-bold text-xs shadow-sm h-auto justify-center"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+            <span>Investigate Transaction</span>
+          </Button>
+        </div>
+
+        {/* Supporting notice */}
+        <div className="flex items-center justify-between text-[11px] text-gray-400 pt-1">
+          <span>Supported: Bangla (বাংলা), Banglish, English</span>
+          <span>Dual-Control Governance strictly enforced</span>
+        </div>
+      </div>
+
+      <div ref={chatBottomRef} />
     </div>
   );
 };
