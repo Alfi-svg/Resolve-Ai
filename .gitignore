@@ -30,8 +30,10 @@ __pycache__/
 *.db-journal
 
 # Environment variables
+.env
 .env.local
 .env.*.local
+.vercel/
 
 # Operating System & IDE
 .DS_Store

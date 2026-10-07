@@ -11,9 +11,13 @@ logger = logging.getLogger("upay_resolveai.db")
 
 Base = declarative_base()
 
-# Normalize SQLite path to always be absolute inside backend/
+# Normalize database URL
 database_url = settings.DATABASE_URL
-if database_url.startswith("sqlite") and ":///" in database_url:
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+elif database_url.startswith("postgresql://") and not database_url.startswith("postgresql+asyncpg://"):
+    database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif database_url.startswith("sqlite") and ":///" in database_url:
     path_part = database_url.split(":///", 1)[1]
     if not os.path.isabs(path_part):
         abs_sqlite_path = (BASE_DIR / path_part.lstrip("./")).resolve()

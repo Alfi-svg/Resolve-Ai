@@ -26,7 +26,16 @@ import {
   AccountTakeoverEvaluation
 } from "@/types/risk-guard";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const getApiBase = () => {
+  let base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+  base = base.trim().replace(/\/+$/, "");
+  if (!base.endsWith("/api")) {
+    base = `${base}/api`;
+  }
+  return base;
+};
+
+const API_BASE = getApiBase();
 
 class ApiClient {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
