@@ -53,11 +53,17 @@ class ComplaintParser:
             confidence = scam_eval.get("confidence", 0.95)
             entities["scam_details"] = scam_eval
             entities["security_alert"] = True
-        elif any(w in lower for w in ["qr", "bangla qr", "scan", "merchant", "cafe", "store", "restaurant", "shwapno", "bill"]):
-            intent = "QR_PAYMENT_FAILURE"
+        elif (
+            any(w in lower for w in [
+                "shopkeeper", "dokandar", "দোকানদার", "pay nai", "পায়নি", 
+                "money cut but", "taka katshe", "টাকা কেটেছে", "merchant pay nai"
+            ]) or 
+            any(w in lower for w in ["qr", "bangla qr", "scan", "merchant", "cafe", "store", "restaurant", "shwapno", "bill"])
+        ):
+            intent = "WALLET_DEBITED_MERCHANT_NOT_CREDITED"
             issue = "WALLET_DEBITED_MERCHANT_NOT_CREDITED"
-            confidence = 0.97
-            entities["channel_hint"] = "QR"
+            confidence = 0.98
+            entities["channel_hint"] = "QR_OR_MERCHANT"
         elif any(w in lower for w in ["cash out", "cashout", "atm", "agent", "booth", "payout"]):
             intent = "CASH_OUT_FAILURE"
             issue = "WALLET_DEBITED_CASH_NOT_DISPENSED"

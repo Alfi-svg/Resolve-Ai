@@ -276,6 +276,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             <Button
               size="sm"
               variant="secondary"
+              onClick={() => onNavigateToTab("AI_DETECTED_CASES")}
+              className="bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-200 border-emerald-400/30 gap-2 text-xs py-2 px-4 font-bold"
+            >
+              <Bot className="w-3.5 h-3.5 text-emerald-300" />
+              AI Detected Cases (RES-2026-00182)
+            </Button>
+
+            <Button
+              size="sm"
+              variant="secondary"
               onClick={() => onNavigateToTab("RISK_GUARD")}
               className="bg-white/10 hover:bg-white/20 text-white border-white/20 gap-2 text-xs py-2 px-4"
             >

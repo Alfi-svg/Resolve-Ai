@@ -10,6 +10,7 @@ from app.models.policy import Policy
 from app.models.dispute import Dispute
 from app.models.risk_case import RiskCase
 from app.models.audit_log import AuditLog
+from app.models.notification import Notification
 
 __all__ = [
     "User",
@@ -24,4 +25,5 @@ __all__ = [
     "Dispute",
     "RiskCase",
     "AuditLog",
+    "Notification",
 ]

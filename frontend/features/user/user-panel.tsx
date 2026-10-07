@@ -125,6 +125,7 @@ export const UserPanel: React.FC<UserPanelProps> = ({
             cases={cases}
             onNavigate={setActiveTab}
             onSelectTransaction={setInspectingTxn}
+            onRefreshData={onRefreshData}
           />
         )}
 

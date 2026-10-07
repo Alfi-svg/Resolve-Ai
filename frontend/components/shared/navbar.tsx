@@ -3,6 +3,7 @@
 import React from "react";
 import { ShieldCheck, UserCheck, Bot, Sparkles, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { NotificationsBell } from "@/components/shared/notifications-bell";
 
 interface NavbarProps {
   currentRole: "USER" | "ADMIN";
@@ -44,6 +45,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* System status & Role Switcher */}
           <div className="flex items-center gap-4">
+            {/* ResolveAI Monitoring Status */}
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>ResolveAI Active &bull; Monitored 24/7</span>
+            </div>
+
             {/* Health pill */}
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-subtle border border-surface-border text-xs">
               <span
@@ -60,6 +67,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               )}
             </div>
+
+            {/* Notifications Drawer */}
+            <NotificationsBell />
 
             {/* Role Switcher (User vs Admin) */}
             <div className="flex items-center p-1 bg-surface-muted rounded-xl border border-surface-border">

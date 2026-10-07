@@ -400,6 +400,69 @@ class ApiClient {
   async getAnalyticsOverview(): Promise<AnalyticsOverviewResponse> {
     return this.request<AnalyticsOverviewResponse>("/analytics/overview");
   }
+
+  // AUTONOMOUS AGENT
+  async investigateWithAgent(transactionId: string = "TXN-8F31A2", trigger: string = "transaction_anomaly"): Promise<any> {
+    return this.request<any>("/agent/investigate", {
+      method: "POST",
+      body: JSON.stringify({ transaction_id: transactionId, trigger }),
+    });
+  }
+
+  async getDetectedCases(): Promise<any> {
+    return this.request<any>("/agent/detected-cases");
+  }
+
+  // NOTIFICATIONS
+  async getUserNotifications(userId: string = "USR-001"): Promise<{ notifications: any[]; unread_count: number }> {
+    return this.request<{ notifications: any[]; unread_count: number }>(`/user/notifications?user_id=${encodeURIComponent(userId)}`);
+  }
+
+  async markAllNotificationsRead(userId: string = "USR-001"): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/user/notifications/read-all?user_id=${encodeURIComponent(userId)}`, {
+      method: "POST",
+    });
+  }
+
+  // TWO-MINUTE TRANSFER UNDO
+  async undoTransaction(transactionId: string, reason: string = "Sent to wrong recipient accidentally"): Promise<any> {
+    return this.request<any>(`/transactions/${encodeURIComponent(transactionId)}/undo`, {
+      method: "POST",
+      body: JSON.stringify({ transaction_id: transactionId, reason }),
+    });
+  }
+
+  // STUDENT BENEFITS & ASSISTANCE
+  async getStudentBenefits(): Promise<any> {
+    return this.request<any>("/student/benefits");
+  }
+
+  async applyStudentDiscount(amount: number, merchantName: string): Promise<any> {
+    return this.request<any>("/student/apply-discount", {
+      method: "POST",
+      body: JSON.stringify({ amount, merchant_name: merchantName }),
+    });
+  }
+
+  // PARENTAL CONTROL
+  async getParentalControlSettings(): Promise<any> {
+    return this.request<any>("/parental-control/settings");
+  }
+
+  async updateParentalControl(settings: any): Promise<any> {
+    return this.request<any>("/parental-control/update", {
+      method: "POST",
+      body: JSON.stringify(settings),
+    });
+  }
+
+  // MULTILINGUAL NLP INTENT
+  async testNlpIntent(query: string): Promise<any> {
+    return this.request<any>("/agent/nlp-intent", {
+      method: "POST",
+      body: JSON.stringify({ query }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

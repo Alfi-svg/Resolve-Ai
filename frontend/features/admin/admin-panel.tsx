@@ -30,6 +30,8 @@ import { IncidentsView } from "@/features/admin/incidents-view";
 import { ResolutionQueueView } from "@/features/admin/resolution-queue-view";
 import { AnalyticsView } from "@/features/admin/analytics-view";
 import { AuditLogsView } from "@/features/admin/audit-logs-view";
+import { AIDetectedCasesView } from "@/features/admin/ai-detected-cases-view";
+import { Bot } from "lucide-react";
 
 interface AdminPanelProps {
   gateways: Gateway[];
@@ -42,6 +44,7 @@ interface AdminPanelProps {
 
 export type AdminTabType = 
   | "OVERVIEW"
+  | "AI_DETECTED_CASES"
   | "RESOLVEAI_CASES"
   | "TRANSACTION_DETECTIVE"
   | "RISK_GUARD"
@@ -61,9 +64,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [activeTab, setActiveTab] = useState<AdminTabType>("OVERVIEW");
   const [inspectingCase, setInspectingCase] = useState<SupportCase | null>(null);
 
-  // Exact 8 Navigation tabs specified in prompt
+  // Exact Navigation tabs with AI Detected Cases highlighted
   const navTabs = [
     { id: "OVERVIEW", label: "Overview", icon: LayoutDashboard },
+    { id: "AI_DETECTED_CASES", label: "AI Detected Cases", icon: Bot, badge: "AUTO" },
     { id: "RESOLVEAI_CASES", label: "ResolveAI Cases", icon: Sparkles, badge: cases.length.toString() },
     { id: "TRANSACTION_DETECTIVE", label: "Transaction Detective", icon: Search },
     { id: "RISK_GUARD", label: "Risk Guard", icon: ShieldCheck, badge: "ALERT" },
@@ -149,6 +153,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               gateways={gateways}
               onNavigateToTab={(tabId) => setActiveTab(tabId as AdminTabType)}
               onSelectCase={handleOpenWorkspace}
+            />
+          )}
+
+          {activeTab === "AI_DETECTED_CASES" && (
+            <AIDetectedCasesView
+              onOpenWorkspace={handleOpenWorkspace}
+              onRefreshData={onRefreshData}
             />
           )}
 

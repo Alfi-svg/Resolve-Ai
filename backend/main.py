@@ -10,6 +10,7 @@ from app.api.v1.endpoints.resolveai import router as resolveai_router
 from app.api.v1.endpoints.risk_guard import router as risk_guard_router
 from app.api.v1.endpoints.incidents import router as incidents_router
 from app.api.v1.endpoints.health import router as health_router
+from app.api.v1.endpoints.agent import router as agent_router
 from app.db.session import init_db, AsyncSessionLocal
 from app.seed.seed_data import seed_initial_data
 
@@ -57,6 +58,8 @@ app.include_router(resolveai_router, prefix="/api/resolveai", tags=["ResolveAI D
 app.include_router(risk_guard_router, prefix="/api/risk-guard", tags=["Risk Guard Direct"])
 app.include_router(incidents_router, prefix="/api/incidents", tags=["Incidents Direct"])
 app.include_router(health_router, prefix="/api/health", tags=["Health Direct"])
+app.include_router(agent_router, prefix="/api/agent", tags=["Autonomous ResolveAI Agent"])
+app.include_router(agent_router, prefix="/api", tags=["Autonomous Agent & User Value Extensions"])
 
 # Also include versioned API router under /api/v1
 app.include_router(synthetic_router, prefix="/api/v1", tags=["Synthetic Fintech Intelligence v1"])

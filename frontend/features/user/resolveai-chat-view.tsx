@@ -532,22 +532,80 @@ export const ResolveAIChatView: React.FC<ResolveAIChatViewProps> = ({
               </p>
             </div>
 
-            {/* Quick Prompt Suggestions */}
+            {/* Multilingual NLP Intent Showcase */}
             {!investigationResult && !isInvestigating && (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {samplePrompts.map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setComplaintText(prompt);
-                      handleStartInvestigation(prompt);
-                    }}
-                    className="text-[11px] font-medium text-upay-800 bg-upay-50/70 hover:bg-upay-100 border border-upay-200/60 rounded-xl px-3 py-1.5 text-left transition-all hover:scale-[1.01]"
-                  >
-                    &ldquo;{prompt}&rdquo;
-                  </button>
-                ))}
+              <div className="space-y-2 pt-2">
+                <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-300 text-xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-upay-950 text-[11px] uppercase tracking-wide flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-upay-700" />
+                      Multilingual NLP Intent Benchmark
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-md">
+                      Same Intent: WALLET_DEBITED_MERCHANT_NOT_CREDITED
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-600">
+                    Test multilingual intent mapping across English, Banglish, and native Bangla script:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const q = "Money cut but shopkeeper didn't get it";
+                        setComplaintText(q);
+                        handleStartInvestigation(q);
+                      }}
+                      className="p-2.5 rounded-xl bg-white hover:bg-emerald-100 border border-emerald-200 text-left transition-all text-xs group"
+                    >
+                      <span className="text-[10px] font-bold uppercase text-gray-600 block">English</span>
+                      <strong className="text-upay-900 text-[11px] group-hover:text-upay-950">&ldquo;Money cut but shopkeeper didn&apos;t get it&rdquo;</strong>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const q = "taka katshe kintu dokandar pay nai";
+                        setComplaintText(q);
+                        handleStartInvestigation(q);
+                      }}
+                      className="p-2.5 rounded-xl bg-white hover:bg-emerald-100 border border-emerald-200 text-left transition-all text-xs group"
+                    >
+                      <span className="text-[10px] font-bold uppercase text-gray-600 block">Banglish</span>
+                      <strong className="text-upay-900 text-[11px] group-hover:text-upay-950">&ldquo;taka katshe kintu dokandar pay nai&rdquo;</strong>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const q = "টাকা কেটেছে কিন্তু দোকানদার পায়নি";
+                        setComplaintText(q);
+                        handleStartInvestigation(q);
+                      }}
+                      className="p-2.5 rounded-xl bg-white hover:bg-emerald-100 border border-emerald-200 text-left transition-all text-xs group"
+                    >
+                      <span className="text-[10px] font-bold uppercase text-gray-600 block">Bangla</span>
+                      <strong className="text-upay-900 text-[11px] group-hover:text-upay-950">&ldquo;টাকা কেটেছে কিন্তু দোকানদার পায়নি&rdquo;</strong>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Additional Quick Prompt Suggestions */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {samplePrompts.slice(1).map((prompt, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setComplaintText(prompt);
+                        handleStartInvestigation(prompt);
+                      }}
+                      className="text-[11px] font-medium text-upay-800 bg-surface-subtle hover:bg-upay-50 border border-surface-border rounded-xl px-3 py-1.5 text-left transition-all"
+                    >
+                      &ldquo;{prompt}&rdquo;
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>

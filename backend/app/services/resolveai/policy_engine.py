@@ -52,7 +52,7 @@ class PolicyEngine:
     ) -> PolicyResult:
         code = root_cause.root_cause_code
 
-        if "GATEWAY_TIMEOUT" in code or intent.intent == "QR_PAYMENT_FAILURE":
+        if "GATEWAY_TIMEOUT" in code or intent.intent in ["QR_PAYMENT_FAILURE", "WALLET_DEBITED_MERCHANT_NOT_CREDITED"]:
             pol = cls.POLICY_CATALOG["QR_RECONCILIATION"]
         elif "ANOMALOUS" in code or intent.intent == "UNAUTHORIZED_TRANSFER":
             pol = cls.POLICY_CATALOG["FRAUD_QUARANTINE"]

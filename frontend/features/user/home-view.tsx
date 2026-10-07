@@ -21,6 +21,9 @@ import {
 import { formatBDT, formatDate } from "@/lib/utils";
 import { SyntheticTransaction, SupportCase } from "@/types/synthetic";
 import { Badge } from "@/components/ui/badge";
+import { TwoMinuteUndo } from "@/components/user/two-minute-undo";
+import { StudentHub } from "@/components/user/student-hub";
+import { ParentalControlWidget } from "@/components/user/parental-control-widget";
 
 interface HomeViewProps {
   balance: number;
@@ -28,6 +31,7 @@ interface HomeViewProps {
   cases: SupportCase[];
   onNavigate: (tab: string) => void;
   onSelectTransaction: (txn: SyntheticTransaction) => void;
+  onRefreshData?: () => void;
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
@@ -36,6 +40,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   cases,
   onNavigate,
   onSelectTransaction,
+  onRefreshData,
 }) => {
   const [showBalance, setShowBalance] = useState<boolean>(true);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -309,6 +314,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       )}
     </div>
+
+      {/* Two-Minute Transfer Undo Feature */}
+      <TwoMinuteUndo onSuccess={() => onRefreshData && onRefreshData()} />
+
+      {/* Student Benefits Hub (20% Discount + Assistance Explainer) */}
+      <StudentHub />
+
+      {/* Parental Control Safeguards */}
+      <ParentalControlWidget />
 
       {/* Security & Support Help Footer */}
       <div className="rounded-2xl p-4 bg-surface-subtle border border-surface-border flex items-center justify-between text-xs text-gray-600">
