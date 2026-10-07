@@ -38,13 +38,34 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onSelectTransaction,
 }) => {
   const [showBalance, setShowBalance] = useState<boolean>(true);
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   // Quick actions
   const quickActions = [
-    { id: "send", label: "Send Money", icon: Send, action: () => alert("Send Money: Direct MFS transfer to any Upay or bank account.") },
-    { id: "add", label: "Add Money", icon: PlusCircle, action: () => alert("Add Money: From Visa/Mastercard or Internet Banking.") },
-    { id: "cashout", label: "Cash Out", icon: ArrowDownLeft, action: () => alert("Cash Out: At 150,000+ Upay agent points or ATMs.") },
-    { id: "pay", label: "Make Payment", icon: QrCode, action: () => alert("Make Payment: Scan Bangla QR at merchants.") },
+    { 
+      id: "send", 
+      label: "Send Money", 
+      icon: Send, 
+      action: () => setActionNotice("Send Money: Instant P2P transfer enabled for all verified Upay numbers.") 
+    },
+    { 
+      id: "add", 
+      label: "Add Money", 
+      icon: PlusCircle, 
+      action: () => setActionNotice("Add Money: Integrated with Visa, Mastercard, and NPSB Internet Banking.") 
+    },
+    { 
+      id: "cashout", 
+      label: "Cash Out", 
+      icon: ArrowDownLeft, 
+      action: () => setActionNotice("Cash Out: Operational at 150,000+ Upay agent points nationwide.") 
+    },
+    { 
+      id: "pay", 
+      label: "Make Payment", 
+      icon: QrCode, 
+      action: () => setActionNotice("Make Payment: Point camera to scan any standard Bangla QR terminal.") 
+    },
     { 
       id: "resolveai", 
       label: "ResolveAI", 
@@ -129,6 +150,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
             + Split Bill
           </span>
         </div>
+
+        {actionNotice && (
+          <div className="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs flex items-center justify-between gap-2 animate-in fade-in">
+            <span className="font-medium">{actionNotice}</span>
+            <button 
+              type="button" 
+              onClick={() => setActionNotice(null)} 
+              className="text-emerald-700 hover:text-emerald-950 font-bold text-xs p-1"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         <div className="grid grid-cols-5 gap-2 sm:gap-4 text-center">
           {quickActions.map((item) => {

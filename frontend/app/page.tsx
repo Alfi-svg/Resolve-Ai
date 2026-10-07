@@ -123,7 +123,7 @@ export default function HomePage() {
       {/* Loading Overlay */}
       {loading && userTransactions.length === 0 && (
         <div className="flex-1 flex flex-col items-center justify-center p-12 space-y-3">
-          <div className="w-9 h-9 border-3 border-upay-800 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-upay-800 border-t-transparent rounded-full animate-spin" />
           <p className="text-xs font-bold text-gray-700 flex items-center gap-2">
             <Radio className="w-3.5 h-3.5 text-upay-700 animate-pulse" />
             Connecting to FastAPI backend &bull; Syncing real account ledger...

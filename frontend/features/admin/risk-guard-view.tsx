@@ -423,9 +423,10 @@ export const RiskGuardView: React.FC = () => {
 
   const handleFailover = () => {
     setRerouted(true);
-    setTimeout(() => {
-      alert("Traffic for GW-NPSB-SWITCH successfully rerouted to GW-CITY-PG. Latency normalized to 110ms.");
-    }, 400);
+    setActionFeedback({
+      message: "Traffic for GW-NPSB-SWITCH successfully rerouted to GW-CITY-PG. Latency normalized to 110ms.",
+      type: "success"
+    });
   };
 
   // 7 Deterministic signal reference cards
