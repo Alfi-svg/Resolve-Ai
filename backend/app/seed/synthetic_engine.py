@@ -403,6 +403,74 @@ async def generate_synthetic_fintech_dataset(db: AsyncSession, force_refresh: bo
     for ev in evidences_s1:
         db.add(ev)
 
+    # Hero Auto-Detected Case RES-2026-00182 for Operations Queue
+    case_hero = SupportCase(
+        id="RES-2026-00182",
+        user_id="USR-001",
+        transaction_id="TXN-8F31A2",
+        complaint="Autonomous stream detector identified WALLET_DEBITED_MERCHANT_NOT_CREDITED pattern: Core wallet was debited ৳2,000 but partner Gateway-X experienced an HTTP 504 confirmation timeout.",
+        status="WAITING_APPROVAL",
+        priority="HIGH",
+        risk_score=18.0,
+        assigned_admin="Upay Ops Intelligence Admin",
+        created_at=s1_time + datetime.timedelta(minutes=1)
+    )
+    db.add(case_hero)
+
+    inv_hero = AIInvestigation(
+        id="INV-RES-00182",
+        case_id="RES-2026-00182",
+        intent="FAILED_PAYMENT_MISSING_MERCHANT_SETTLEMENT",
+        transaction_id="TXN-8F31A2",
+        root_cause="Gateway Confirmation Timeout: Customer wallet was debited ৳2,000 but partner Gateway-X experienced an HTTP 504 confirmation timeout, preventing merchant settlement credit.",
+        confidence=0.98,
+        risk_score=18.0,
+        recommendation="INITIATE_RECONCILIATION: Execute instant automated refund of ৳2,000.00 to customer wallet under Policy POL-QR-001.",
+        status="WAITING_APPROVAL"
+    )
+    db.add(inv_hero)
+
+    evidences_hero = [
+        Evidence(
+            id="EVD-RES-01",
+            investigation_id="INV-RES-00182",
+            source="CORE_LEDGER",
+            event="WALLET_DEBIT_CONFIRMED",
+            timestamp=s1_time + datetime.timedelta(milliseconds=120),
+            importance="CRITICAL",
+            details="Core wallet successfully debited BDT 2,000.00 from user 01700000000. Ledger reference #LDG-89210-CR."
+        ),
+        Evidence(
+            id="EVD-RES-02",
+            investigation_id="INV-RES-00182",
+            source="PAYMENT_GATEWAY",
+            event="GATEWAY_CONFIRMATION_TIMEOUT",
+            timestamp=s1_time + datetime.timedelta(milliseconds=5340),
+            importance="CRITICAL",
+            details="Gateway switch GW-BRAC-SWITCH / Gateway-X socket dropped connection after 5000ms. Response code: GW_TIMEOUT_504."
+        ),
+        Evidence(
+            id="EVD-RES-03",
+            investigation_id="INV-RES-00182",
+            source="MERCHANT_INTEGRATION_HUB",
+            event="MERCHANT_SETTLEMENT_MISSING",
+            timestamp=s1_time + datetime.timedelta(milliseconds=5400),
+            importance="HIGH",
+            details="ABC Cafe terminal POS-04 webhook received no credit confirmation packet. Transaction remains unsettled at merchant counter."
+        ),
+        Evidence(
+            id="EVD-RES-04",
+            investigation_id="INV-RES-00182",
+            source="POLICY_RAG",
+            event="POLICY_MATCH_POL_QR_001",
+            timestamp=s1_time + datetime.timedelta(milliseconds=5500),
+            importance="MEDIUM",
+            details="Matched compliance rule POL-QR-001: Automatic reversal mandated within 15 minutes for uncredited merchant switch timeouts."
+        )
+    ]
+    for ev in evidences_hero:
+        db.add(ev)
+
     # ----------------------------------------------------
     # 6. SCENARIO 2: SUSPICIOUS HIGH-RISK TRANSACTION
     # TXN-91K82X | ৳45,000 | User USR-002 | Risk: HIGH (88.5)

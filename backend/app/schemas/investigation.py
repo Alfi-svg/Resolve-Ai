@@ -84,6 +84,7 @@ class PipelineStepStatus(BaseModel):
 class FinalInvestigationObject(BaseModel):
     investigation_id: str
     case_id: str
+    transaction_id: Optional[str] = None
     complaint: str
     intent: IntentResult
     transaction: TransactionMatchResult
