@@ -94,38 +94,49 @@ export const HomeView: React.FC<HomeViewProps> = ({
           upay
         </div>
 
-        <div className="relative z-10 flex justify-between items-start">
-          <div className="space-y-1">
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-emerald-200/90 tracking-wide uppercase">
-                Upay Core Wallet
+              <span className="text-[11px] font-extrabold text-emerald-300 tracking-wider uppercase">
+                GOOD MORNING, ALFI
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/20">
-                Active KYC
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/20">
+                Verified Account
               </span>
             </div>
 
-            <div className="flex items-center gap-3 pt-1">
-              <div className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                {showBalance ? formatBDT(balance) : "৳ •••••••"}
+            <span className="text-xs font-medium text-emerald-200/80 block">
+              Available Balance
+            </span>
+
+            <div className="flex items-center gap-3 pt-0.5">
+              <div className="text-3xl sm:text-4xl font-black tracking-tight fintech-amount text-white">
+                {showBalance ? (balance ? formatBDT(balance) : "৳24,850.00") : "৳ •••••••"}
               </div>
               <button
                 type="button"
                 onClick={() => setShowBalance(!showBalance)}
-                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 transition-colors"
+                className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 transition-colors"
                 title={showBalance ? "Hide Balance" : "Show Balance"}
               >
                 {showBalance ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
+
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                <TrendingUp className="w-3 h-3 text-emerald-300" />
+                +2.8% this month
+              </span>
             </div>
-            <p className="text-xs text-emerald-200/70 pt-0.5">
-              Account: +88017****5678 &bull; Alfi Rahman
+
+            <p className="text-[11px] text-emerald-200/70 pt-0.5">
+              Account: +880 1712-***678 &bull; Upay Personal Wallet
             </p>
           </div>
 
-          <div className="hidden sm:flex flex-col items-end text-right">
-            <span className="text-[11px] text-emerald-300/80">Monthly Limit Used</span>
-            <span className="text-xs font-bold text-white">৳24,500 / ৳200,000</span>
+          <div className="flex flex-col items-start sm:items-end text-left sm:text-right bg-white/5 p-3 rounded-2xl border border-white/10">
+            <span className="text-[10px] text-emerald-300/80 uppercase font-semibold">Monthly Spend Limit</span>
+            <span className="text-xs font-bold text-white font-mono">৳24,500 / ৳200,000</span>
+            <span className="text-[10px] text-emerald-400/80 font-medium">87.7% Remaining</span>
           </div>
         </div>
 

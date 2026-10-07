@@ -75,14 +75,14 @@ export const AnalyticsView: React.FC = () => {
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-upay-800" />
-              ResolveAI Intelligence Analytics
+              RESOLVEAI IMPACT
             </h2>
-            <Badge variant="brand" className="text-[10px] uppercase font-bold">
-              GET /api/analytics/overview
+            <Badge variant="neutral" className="text-[10px] uppercase font-bold bg-amber-50 text-amber-800 border-amber-300">
+              Synthetic Demo Benchmark
             </Badge>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
-            Real-time resolution velocity, root-cause epidemiology, and human vs. AI turnaround times from backend telemetry.
+            Operational turnaround velocity, forensic evidence match rate, and human governance benchmarks.
           </p>
         </div>
 
@@ -124,57 +124,61 @@ export const AnalyticsView: React.FC = () => {
       {/* Data Visualizations */}
       {data && (
         <>
-          {/* Hero SLA Comparison Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-2">
-              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
-                Avg Resolution Time
+          {/* Hero Benchmark Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className="p-4 rounded-3xl bg-white border border-surface-border shadow-card space-y-1">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                Cases Evaluated
               </span>
-              <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-black text-emerald-700">
-                  {Math.round(data.avg_resolution_seconds / 60 * 10) / 10} Mins
+              <p className="text-2xl font-black text-gray-900 font-mono">
+                {data.total_cases_analyzed || 341}
+              </p>
+              <p className="text-[10px] text-gray-500">Autonomous Triaged</p>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-white border border-surface-border shadow-card space-y-1">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                Avg Investigation
+              </span>
+              <div className="flex items-baseline gap-1">
+                <p className="text-2xl font-black text-emerald-700 font-mono">
+                  38s
                 </p>
-                <span className="text-xs text-gray-400 line-through">72 Hours</span>
+                <span className="text-[10px] text-gray-400 line-through">18m</span>
               </div>
-              <p className="text-[11px] text-emerald-800 font-semibold">
-                {data.avg_resolution_seconds}s turnaround vs legacy bank SLA
+              <p className="text-[10px] text-emerald-800 font-semibold">
+                96.5% Speedup
               </p>
             </div>
 
-            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-2">
-              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
+            <div className="p-4 rounded-3xl bg-white border border-surface-border shadow-card space-y-1">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                Evidence Match Rate
+              </span>
+              <p className="text-2xl font-black text-upay-900 font-mono">
+                99.2%
+              </p>
+              <p className="text-[10px] text-emerald-700 font-medium">4/4 corroboration</p>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-white border border-surface-border shadow-card space-y-1">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                Escalation Rate
+              </span>
+              <p className="text-2xl font-black text-indigo-700 font-mono">
+                3.8%
+              </p>
+              <p className="text-[10px] text-gray-500 font-medium">Low false-positives</p>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-white border border-surface-border shadow-card space-y-1 col-span-2 sm:col-span-1">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
                 Resolution Rate
               </span>
-              <p className="text-3xl font-black text-upay-900">
-                {data.resolution_rate}%
+              <p className="text-2xl font-black text-emerald-800 font-mono">
+                {data.resolution_rate || 96.2}%
               </p>
-              <p className="text-[11px] text-gray-500 font-medium">
-                {data.total_cases_analyzed} total cases processed
-              </p>
-            </div>
-
-            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-2">
-              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
-                Total Reversal Disbursed
-              </span>
-              <p className="text-3xl font-black text-gray-900">
-                {formatBDT(data.total_refunded_bdt || 682000)}
-              </p>
-              <p className="text-[11px] text-emerald-700 font-medium">
-                Zero erroneous double-credits
-              </p>
-            </div>
-
-            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-2">
-              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
-                Human Governance
-              </span>
-              <p className="text-3xl font-black text-indigo-700">
-                100%
-              </p>
-              <p className="text-[11px] text-gray-500 font-medium">
-                {data.human_approved_count} approved &bull; {data.rejected_count} rejected &bull; {data.escalated_count} escalated
-              </p>
+              <p className="text-[10px] text-emerald-700 font-medium">SLA compliant</p>
             </div>
           </div>
 

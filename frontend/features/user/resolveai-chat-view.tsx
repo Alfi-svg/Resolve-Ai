@@ -16,7 +16,15 @@ import {
   ExternalLink,
   Bot,
   User as UserIcon,
-  CornerDownLeft
+  CornerDownLeft,
+  FileText,
+  Check,
+  Lock,
+  Shield,
+  Activity,
+  RotateCcw,
+  FileCheck2,
+  Layers
 } from "lucide-react";
 import { formatBDT } from "@/lib/utils";
 import { SyntheticTransaction } from "@/types/synthetic";
@@ -480,6 +488,422 @@ export const ResolveAIChatView: React.FC<ResolveAIChatViewProps> = ({
     }
   };
 
+  const detectLanguage = (text: string) => {
+    if (/[\u0980-\u09FF]/.test(text)) {
+      return { name: "Bangla", script: "Native Script (bn-BD)", badge: "Bangla Script", code: "BN" };
+    }
+    const banglishWords = ["taka", "katshe", "kete", "dokandar", "pay", "korechi", "geche", "nai", "ashe", "bolte", "korchi", "tky"];
+    const lower = text.toLowerCase();
+    if (banglishWords.some(w => lower.includes(w))) {
+      return { name: "Banglish", script: "Romanized Bengali (bn-Latn)", badge: "Banglish", code: "BN-LATN" };
+    }
+    return { name: "English", script: "Standard English (en-US)", badge: "English", code: "EN" };
+  };
+
+  // Render 3-panel financial investigation software if investigation is complete
+  if (investigationResult) {
+    const lang = detectLanguage(complaintText);
+    const stages = getStagesFromResult(investigationResult);
+
+    return (
+      <div className="w-full space-y-6 animate-in fade-in duration-300">
+        {/* Top Header / Breadcrumb */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-surface-border gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-upay-900 text-white flex items-center justify-center shadow-sm">
+              <Sparkles className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-extrabold text-gray-900 tracking-tight">
+                  RESOLVEAI WORKSPACE
+                </h2>
+                <Badge variant="brand" className="text-[10px] tracking-wide font-black uppercase">
+                  INVESTIGATION COMPLETE
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Understand. Investigate. Resolve. &bull; Multi-System Forensics &bull; Dual-Control Governance
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setInvestigationResult(null);
+                setCurrentStepIndex(-1);
+                setComplaintText("");
+              }}
+              className="text-xs gap-1.5 h-8"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Start New Dispute
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onNavigateToCases}
+              className="text-xs gap-1.5 h-8"
+            >
+              Track in Cases
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* 3-Column Financial Investigation Software Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* COLUMN 1: Dispute Context & Customer Complaint */}
+          <div className="lg:col-span-3 space-y-4">
+            {/* Customer Complaint Card */}
+            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <UserIcon className="w-3.5 h-3.5 text-upay-700" />
+                  Customer Narrative
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                  {lang.badge}
+                </span>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-surface-subtle border border-surface-border text-xs text-gray-900 italic font-medium leading-relaxed">
+                &ldquo;{complaintText || "QR payment korechi, 2000 taka kete geche but merchant pay nai."}&rdquo;
+              </div>
+
+              <div className="space-y-1.5 pt-1 text-[11px]">
+                <div className="flex items-center justify-between text-gray-500">
+                  <span>Script Format:</span>
+                  <span className="font-semibold text-gray-800">{lang.script}</span>
+                </div>
+                <div className="flex items-center justify-between text-gray-500">
+                  <span>Extracted Intent:</span>
+                  <span className="font-mono font-bold text-upay-900">
+                    {investigationResult.isScamAlert ? "SCAM_SUSPECTED" : "WALLET_DEBITED_MERCHANT_NOT_CREDITED"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Linked Transaction Card */}
+            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Receipt className="w-3.5 h-3.5 text-upay-700" />
+                  Linked Transaction
+                </span>
+                <span className="font-mono text-xs font-bold text-upay-900">
+                  {investigationResult.txnId}
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-upay-950 text-white space-y-3">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <span className="text-[10px] text-slate-400 block font-semibold">MERCHANT</span>
+                    <strong className="text-sm text-white block">{investigationResult.merchantName}</strong>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-400 block font-semibold">AMOUNT</span>
+                    <strong className="text-base font-black text-emerald-400 font-mono">
+                      {formatBDT(investigationResult.amount)}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+                  <span>Channel: Bangla QR</span>
+                  <span className="font-mono">10:31:02 AM BST</span>
+                </div>
+              </div>
+
+              {/* Dual Ledger Discrepancy Status */}
+              <div className="space-y-2 text-xs">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-500 block">
+                  Switch State Discrepancy
+                </span>
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-center justify-between text-[11px]">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    Customer Core Balance
+                  </span>
+                  <span className="font-bold">Debited (-{formatBDT(investigationResult.amount)})</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-950 flex items-center justify-between text-[11px]">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                    Merchant POS Counter
+                  </span>
+                  <span className="font-bold">Uncredited (No ACK)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Reconstructed Event Sequence */}
+            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-3">
+              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-upay-700" />
+                Reconstructed Events ({investigationResult.timeline?.length || 5})
+              </span>
+
+              <div className="space-y-2 text-xs font-mono">
+                {(investigationResult.timeline && investigationResult.timeline.length > 0 ? investigationResult.timeline : [
+                  { time: "10:31:02", title: "App QR Scan & PIN", status: "SUCCESS" },
+                  { time: "10:31:03", title: "Core Ledger Debited", status: "SUCCESS" },
+                  { time: "10:31:04", title: "NPSB Switch Outbound", status: "SUCCESS" },
+                  { time: "10:31:14", title: "Gateway Timeout 504", status: "TIMEOUT" },
+                  { time: "10:31:15", title: "Discrepancy Logged", status: "PENDING" }
+                ]).map((t: any, idx: number) => (
+                  <div key={idx} className="p-2 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between text-[10px]">
+                    <span className="text-gray-400 font-mono">{t.time || t.timestamp}</span>
+                    <span className="font-semibold text-gray-800 truncate max-w-[140px]">{t.title || t.event}</span>
+                    <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] ${
+                      t.status === "SUCCESS" ? "bg-emerald-100 text-emerald-800" :
+                      t.status === "TIMEOUT" || t.status === "FAILED" ? "bg-rose-100 text-rose-800" :
+                      "bg-amber-100 text-amber-800"
+                    }`}>
+                      {t.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Multilingual Switcher Shortcuts */}
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-900 block">
+                Test Other Languages:
+              </span>
+              <div className="flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const q = "Money cut but shopkeeper didn't get it";
+                    setComplaintText(q);
+                    handleStartInvestigation(q);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-white border border-emerald-200 text-left hover:bg-emerald-100/70 text-[11px] font-medium text-upay-950 transition-colors"
+                >
+                  <span className="text-gray-400 text-[10px] block font-bold">English:</span>
+                  &ldquo;Money cut but shopkeeper didn&apos;t get it&rdquo;
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const q = "taka katshe kintu dokandar pay nai";
+                    setComplaintText(q);
+                    handleStartInvestigation(q);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-white border border-emerald-200 text-left hover:bg-emerald-100/70 text-[11px] font-medium text-upay-950 transition-colors"
+                >
+                  <span className="text-gray-400 text-[10px] block font-bold">Banglish:</span>
+                  &ldquo;taka katshe kintu dokandar pay nai&rdquo;
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const q = "টাকা কেটেছে কিন্তু দোকানদার পায়নি";
+                    setComplaintText(q);
+                    handleStartInvestigation(q);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-white border border-emerald-200 text-left hover:bg-emerald-100/70 text-[11px] font-medium text-upay-950 transition-colors"
+                >
+                  <span className="text-gray-400 text-[10px] block font-bold">Bangla:</span>
+                  &ldquo;টাকা কেটেছে কিন্তু দোকানদার পায়নি&rdquo;
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* COLUMN 2: AI Investigation Pipeline */}
+          <div className="lg:col-span-5 space-y-4">
+            <AIProcessTimeline
+              title="AI INVESTIGATION PIPELINE"
+              subtitle="Autonomous Multi-Source Evidence Processing & Policy Evaluation"
+              stages={stages}
+              defaultExpandedIds={["complaint_understanding", "root_cause_analysis", "human_approval"]}
+              badgeText="EVIDENTIARY AUDIT CHAIN"
+            />
+          </div>
+
+          {/* COLUMN 3: Investigation Findings & Action Panel */}
+          <div className="lg:col-span-4 space-y-4">
+            {/* 1. Root Cause Card */}
+            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-surface-border">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                  Root Cause Identified
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-mono font-bold">
+                  BRAC-GW-TIMEOUT-504
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-extrabold text-gray-900">
+                  {investigationResult.isScamAlert 
+                    ? "External Social Engineering Attempt" 
+                    : "Gateway Confirmation Timeout (504)"}
+                </h3>
+                <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                  {investigationResult.whyExplanation}
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-[11px]">
+                <span className="text-slate-600">Diagnostic Confidence:</span>
+                <strong className="text-upay-950 font-bold">{investigationResult.confidence || 94}% AI Certainty</strong>
+              </div>
+            </div>
+
+            {/* 2. Evidence Corroboration Card (4 of 4 sources) */}
+            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-surface-border">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  Evidence Corroboration
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                  4 of 4 Sources Match
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <strong className="text-gray-900 block text-[11px]">1. Core Ledger</strong>
+                    <span className="text-gray-500 text-[10px]">৳2,000 deducted (LDG-89210-CR)</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                    VERIFIED ✓
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <strong className="text-gray-900 block text-[11px]">2. NPSB Switch</strong>
+                    <span className="text-gray-500 text-[10px]">Clearing message ACK received</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                    ACKED ✓
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <strong className="text-gray-900 block text-[11px]">3. Acquirer Gateway</strong>
+                    <span className="text-gray-500 text-[10px]">HTTP 504 Timeout after 10,000ms</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[10px]">
+                    TIMEOUT ✗
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-surface-subtle border border-surface-border flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <strong className="text-gray-900 block text-[11px]">4. Merchant Counter</strong>
+                    <span className="text-gray-500 text-[10px]">Zero settlement credit on POS-04</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[10px]">
+                    UNCREDITED ✗
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Policy Engine Card */}
+            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-surface-border">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-upay-700" />
+                  Policy Engine Rule
+                </span>
+                <span className="font-mono text-xs font-bold text-upay-900">
+                  {investigationResult.isScamAlert ? "POL-SEC-004" : "POL-QR-001"}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 space-y-1.5 leading-relaxed">
+                <strong className="block text-[11px]">
+                  {investigationResult.isScamAlert
+                    ? "Upay Zero-Trust Credential Protection Directive"
+                    : "Bangladesh Bank National QR Dispute Directive (Clause 4.2)"}
+                </strong>
+                <p className="text-[11px] text-emerald-900">
+                  {investigationResult.isScamAlert
+                    ? "Protective hold mandated to prevent unauthorized credential usage."
+                    : "When consumer funds are debited but switch gateway fails to deliver synchronous ACK to merchant terminal within SLA, issuer is authorized to disburse an automated ledger reversal."}
+                </p>
+              </div>
+            </div>
+
+            {/* 4. Risk Assessment & Recommended Action */}
+            <div className="p-5 rounded-3xl bg-white border border-surface-border shadow-card space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  Risk & Recommendation
+                </span>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                  investigationResult.isScamAlert 
+                    ? "bg-rose-100 text-rose-800 border border-rose-200" 
+                    : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                }`}>
+                  {investigationResult.isScamAlert ? "HIGH RISK (95/100)" : "LOW RISK (5/100)"}
+                </span>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-upay-50/70 border border-upay-200 text-xs space-y-1">
+                <span className="text-[10px] uppercase font-bold text-upay-800 block">Proposed Action:</span>
+                <strong className="text-upay-950 text-sm block">
+                  {investigationResult.isScamAlert 
+                    ? "Protective Wallet Quarantine" 
+                    : "Automated Ledger Reversal: " + formatBDT(investigationResult.amount)}
+                </strong>
+                <p className="text-[11px] text-gray-600 pt-1">
+                  {investigationResult.whatNext}
+                </p>
+              </div>
+            </div>
+
+            {/* 5. Dual-Control Approval Action */}
+            <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-900 via-upay-950 to-slate-900 text-white shadow-xl space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                  <Lock className="w-3 h-3 text-emerald-400" />
+                  Dual-Control Governance
+                </span>
+                <span className="text-[10px] font-mono text-slate-300">
+                  {investigationResult.ticketId}
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed">
+                AI recommends; human operations officer must authorize ledger execution before funds are disbursed.
+              </p>
+
+              <div className="pt-2 flex flex-col gap-2">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={onNavigateToCases}
+                  className="w-full gap-2 justify-center py-2 text-xs font-bold"
+                >
+                  Track in Operations Queue
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
@@ -496,7 +920,7 @@ export const ResolveAIChatView: React.FC<ResolveAIChatViewProps> = ({
               </Badge>
             </h2>
             <p className="text-xs text-gray-500">
-              Explain any transaction problem in Bangla or English. Our AI will investigate the ledger.
+              Explain any transaction problem in Bangla, Banglish, or English. Our AI will investigate the ledger.
             </p>
           </div>
         </div>
@@ -668,146 +1092,6 @@ export const ResolveAIChatView: React.FC<ResolveAIChatViewProps> = ({
                   </div>
                 );
               })}
-            </div>
-          </div>
-        )}
-
-        {/* Structured Customer-Friendly Resolution Result */}
-        {investigationResult && (
-          <div className="space-y-4 animate-in zoom-in-95 duration-200">
-            {/* Step Complete Ticker */}
-            <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>AI Investigation Complete &bull; Forensic Evidence Assembled</span>
-            </div>
-
-            {/* Structured Card */}
-            <div className="rounded-3xl border border-surface-border bg-surface-subtle overflow-hidden shadow-card">
-              {/* Header: TRANSACTION FOUND */}
-              <div className="p-5 bg-gradient-to-r from-upay-950 via-upay-900 to-upay-800 text-white flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-bold tracking-wider text-emerald-300 uppercase">
-                    Transaction Identified
-                  </span>
-                  <div className="flex items-baseline gap-2 pt-0.5">
-                    <h3 className="text-base font-extrabold font-mono text-white">
-                      {investigationResult.txnId}
-                    </h3>
-                    <span className="text-emerald-200 text-xs font-semibold">
-                      &bull; {investigationResult.merchantName}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <span className="text-lg font-black text-white">
-                    {formatBDT(investigationResult.amount)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Status Row */}
-              <div className="p-4 bg-amber-50/70 border-b border-amber-200/60 flex flex-wrap items-center justify-between gap-2 text-xs">
-                <span className="font-bold text-amber-900">Current Status:</span>
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold border border-emerald-200 text-[11px]">
-                    ✓ {investigationResult.walletStatus}
-                  </span>
-                  <span className="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-900 font-bold border border-rose-200 text-[11px]">
-                    ✗ {investigationResult.merchantStatus}
-                  </span>
-                </div>
-              </div>
-
-              {/* Body: WHY DID THIS HAPPEN & WHAT HAPPENS NEXT */}
-              <div className="p-6 space-y-5 text-xs">
-                {/* Why did this happen? */}
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">
-                    Why did this happen?
-                  </span>
-                  <div className="p-3.5 rounded-2xl bg-white border border-surface-border text-gray-800 leading-relaxed font-medium">
-                    {investigationResult.whyExplanation}
-                  </div>
-                </div>
-
-                {/* What happens next? */}
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">
-                    What happens next?
-                  </span>
-                  <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 leading-relaxed font-semibold">
-                    <p>{investigationResult.whatNext}</p>
-                    <div className="mt-2 pt-2 border-t border-emerald-200/60 flex items-center justify-between text-[11px]">
-                      <span className="text-gray-600">Action Status:</span>
-                      <Badge variant="warning">{investigationResult.caseStatus}</Badge>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Optional Customer-Friendly Evidence Timeline Expander */}
-                {investigationResult.timeline && investigationResult.timeline.length > 0 && (
-                  <div className="pt-2 border-t border-surface-border">
-                    <button
-                      type="button"
-                      onClick={() => setShowEvidenceDetails(!showEvidenceDetails)}
-                      className="text-[11px] font-bold text-upay-800 hover:text-upay-900 flex items-center gap-1.5 transition-colors"
-                    >
-                      <Receipt className="w-3.5 h-3.5" />
-                      <span>{showEvidenceDetails ? "Hide" : "View"} Reconstructed Transaction Timeline ({investigationResult.timeline.length} events)</span>
-                    </button>
-
-                    {showEvidenceDetails && (
-                      <div className="mt-3 p-3.5 rounded-2xl bg-white border border-surface-border space-y-2.5">
-                        {investigationResult.timeline.map((item: any, idx: number) => (
-                          <div key={idx} className="flex items-start gap-2 text-[11px] pb-2 border-b border-surface-border/60 last:border-0 last:pb-0">
-                            <span className="font-mono text-gray-400 shrink-0 w-16">{item.time}</span>
-                            <div className="flex-1">
-                              <span className="font-bold text-gray-900 block">{item.title}</span>
-                              <span className="text-gray-600 text-[10px]">{item.description}</span>
-                            </div>
-                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
-                              item.status === "SUCCESS" ? "bg-emerald-100 text-emerald-800" :
-                              item.status === "TIMEOUT" || item.status === "FAILED" ? "bg-rose-100 text-rose-800" :
-                              "bg-gray-100 text-gray-700"
-                            }`}>
-                              {item.status}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Case Tracking Link CTA */}
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <span className="text-[11px] text-gray-500">
-                    Case Ticket Registered: <strong className="font-mono text-gray-900">{investigationResult.ticketId}</strong>
-                  </span>
-
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="w-full sm:w-auto gap-2"
-                    onClick={onNavigateToCases}
-                  >
-                    Track Progress in Cases
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Reusable Structured AI Process Timeline Component */}
-            <div className="pt-2">
-              <AIProcessTimeline
-                title="AI INVESTIGATION PIPELINE"
-                subtitle="Autonomous Multi-Source Evidence Processing & Policy Evaluation"
-                stages={getStagesFromResult(investigationResult)}
-                defaultExpandedIds={["complaint_understanding", "root_cause_analysis", "human_approval"]}
-                badgeText="EVIDENTIARY AUDIT CHAIN"
-              />
             </div>
           </div>
         )}
