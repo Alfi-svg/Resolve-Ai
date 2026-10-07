@@ -35,6 +35,12 @@ from app.schemas.risk_guard import (
 from app.schemas.connected import (
     DemoLoginRequest,
     DemoLoginResponse,
+    DemoUserLoginRequest,
+    DemoUserLoginResponse,
+    DemoUserPayload,
+    DemoAdminLoginRequest,
+    DemoAdminLoginResponse,
+    DemoAdminPayload,
     AdminOverviewResponse,
     ApprovalActionRequest,
     ApprovalResultResponse,
@@ -110,6 +116,60 @@ async def demo_login(
         user=UserResponse.model_validate(user),
         permissions=permissions,
         session_expires_at=expires
+    )
+
+
+@router.post("/auth/demo/user", response_model=DemoUserLoginResponse)
+async def demo_user_login(payload: DemoUserLoginRequest):
+    """
+    Production-style Demo Authentication for User persona.
+    Validates phone: 01700000000 and 6-digit PIN: 123456.
+    """
+    clean_phone = payload.phone.strip()
+    clean_pin = payload.pin.strip()
+
+    if clean_phone != "01700000000" or clean_pin != "123456":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid phone number or PIN."
+        )
+
+    return DemoUserLoginResponse(
+        authenticated=True,
+        role="user",
+        demo_mode=True,
+        user=DemoUserPayload(
+            id="USR-1001",
+            name="Demo User",
+            phone="01700000000"
+        )
+    )
+
+
+@router.post("/auth/demo/admin", response_model=DemoAdminLoginResponse)
+async def demo_admin_login(payload: DemoAdminLoginRequest):
+    """
+    Production-style Demo Authentication for Operations Admin persona.
+    Validates email: admin@resolveai.demo and password: admin123.
+    """
+    clean_email = payload.email.strip().lower()
+    clean_password = payload.password.strip()
+
+    if clean_email != "admin@resolveai.demo" or clean_password != "admin123":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid administrator email or password."
+        )
+
+    return DemoAdminLoginResponse(
+        authenticated=True,
+        role="admin",
+        demo_mode=True,
+        admin=DemoAdminPayload(
+            id="ADM-001",
+            name="ResolveAI Admin",
+            email="admin@resolveai.demo"
+        )
     )
 
 

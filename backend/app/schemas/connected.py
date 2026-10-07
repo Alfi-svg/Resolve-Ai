@@ -22,6 +22,42 @@ class DemoLoginResponse(BaseModel):
     session_expires_at: str
 
 
+class DemoUserLoginRequest(BaseModel):
+    phone: str
+    pin: str
+
+
+class DemoUserPayload(BaseModel):
+    id: str = "USR-1001"
+    name: str = "Demo User"
+    phone: str = "01700000000"
+
+
+class DemoUserLoginResponse(BaseModel):
+    authenticated: bool = True
+    role: str = "user"
+    demo_mode: bool = True
+    user: DemoUserPayload
+
+
+class DemoAdminLoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class DemoAdminPayload(BaseModel):
+    id: str = "ADM-001"
+    name: str = "ResolveAI Admin"
+    email: str = "admin@resolveai.demo"
+
+
+class DemoAdminLoginResponse(BaseModel):
+    authenticated: bool = True
+    role: str = "admin"
+    demo_mode: bool = True
+    admin: DemoAdminPayload
+
+
 # ---------------------------------------------------------------------------
 # RISK SCHEMAS (Clean /api/risk/... aliases)
 # ---------------------------------------------------------------------------

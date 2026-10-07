@@ -71,32 +71,37 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Notifications Drawer */}
             <NotificationsBell />
 
-            {/* Role Switcher (User vs Admin) */}
-            <div className="flex items-center p-1 bg-surface-muted rounded-xl border border-surface-border">
-              <button
-                type="button"
-                onClick={() => onRoleChange("USER")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  currentRole === "USER"
-                    ? "bg-white text-upay-900 shadow-sm border border-surface-border"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                <UserCheck className="w-3.5 h-3.5" />
-                User Panel
-              </button>
+            {/* Persona / Role Badge */}
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-subtle border border-surface-border text-xs">
+                {currentRole === "ADMIN" ? (
+                  <>
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="font-bold text-gray-800">Admin</span>
+                    <span className="text-[10px] text-gray-400 font-mono">admin@resolveai.demo</span>
+                  </>
+                ) : (
+                  <>
+                    <UserCheck className="w-3.5 h-3.5 text-upay-700" />
+                    <span className="font-bold text-gray-800">User</span>
+                    <span className="text-[10px] text-gray-400 font-mono">01700000000</span>
+                  </>
+                )}
+              </div>
 
+              {/* Logout Button */}
               <button
                 type="button"
-                onClick={() => onRoleChange("ADMIN")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  currentRole === "ADMIN"
-                    ? "bg-upay-800 text-white shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("upay_resolveai_demo_session");
+                    window.location.href = "/login";
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-subtle hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 border border-surface-border text-xs font-bold text-gray-600 transition-all shadow-xs"
+                title="Logout from Demo Session"
               >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Admin Panel
+                <span>Logout</span>
               </button>
             </div>
           </div>
